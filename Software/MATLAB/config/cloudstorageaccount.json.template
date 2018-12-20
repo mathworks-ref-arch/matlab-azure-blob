@@ -1,0 +1,7 @@
+{
+	"DefaultEndpointsProtocol" : "https",
+	"AccountKey" : "SVn<MYACCOUNTKEY>0GGw==",
+	"UseDevelopmentStorage" : "false",
+	"AccountName" : "myaccountname",
+    "LocalPathToStorageExplorer" : "C:\\Program Files (x86)\\Microsoft Azure Storage Explorer\\StorageExplorer.exe"
+}
