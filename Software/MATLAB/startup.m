@@ -59,6 +59,10 @@ if ~isdeployed()
     libDir = fullfile(azRoot,'lib','jar');
     jarFiles = dir(fullfile(libDir,'azure-wasb-sdk-0.1.0.jar'));
 
+    if isempty(jarFiles)
+        error('This package doesn''t contain the required jar file.\n');
+    end
+
     % Loop and add to the dynamic classpath
     for jCount = 1:numel(jarFiles)
         libName = fullfile(libDir,jarFiles(jCount).name);

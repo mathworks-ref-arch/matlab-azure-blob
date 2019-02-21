@@ -9,7 +9,7 @@ function upload(obj)
 %    blob.upload();
 %
 % This file is now available on the WASB service. The upload mechanism is
-% vectorized. You can pass a full cell array of files to upload at once.
+% vectorized. A cell array of files to upload can be passed at once.
 % For example, to upload a directory of files:
 %
 %    % Get a list of files

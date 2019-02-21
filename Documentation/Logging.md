@@ -9,19 +9,19 @@ The default console logging level is *debug*. The logging library can log to bot
 
 Once a cloud storage account or client object, which create a singleton logger object, have been created one can change the default values as follows:
 ```
->> logObj = Logger.getLogger();
->> logObj.DisplayLevel = 'verbose';
->> write(logObj,'verbose','My verbose message');
+logObj = Logger.getLogger();
+logObj.DisplayLevel = 'verbose';
+write(logObj,'verbose','My verbose message');
 My verbose message
 ```
 
 To enable logging to a file a log file path and name must be set:
 ```
 % provide a name path for a log file
->> logObj.LogFile = 'MyLogFile.log';
+logObj.LogFile = 'MyLogFile.log';
 
 % set the log level for the log file
->> logObj.LogFileLevel = 'verbose';
+logObj.LogFileLevel = 'verbose';
 ```
 By default a filename is *not* set and no log file is produced. The logging level used in the file output can be set independently as shown. By default this level is set to *warning*.
 

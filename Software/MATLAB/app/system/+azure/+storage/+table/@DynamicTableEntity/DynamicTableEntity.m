@@ -5,7 +5,7 @@ classdef DynamicTableEntity < azure.object
     %
     % For details of mapping of MATLAB datatype to Table Properties see
     % the TableResult class documentation.
-    
+
     % Copyright 2017 The MathWorks, Inc.
 
     properties
@@ -39,25 +39,30 @@ classdef DynamicTableEntity < azure.object
                 % A marshaling is used only type primitives are supported
                 % Creating a null EdmType Entity is not supported by the
                 % Java API
+
+                % Only support char vectors and uint8 as vectors of other
+                % datatypes are not supported by the table API
+                if ~(ischar(obj.(oProps{pCount})) || isa(obj.(oProps{pCount}), 'uint8')) && ~isscalar(obj.(oProps{pCount}))
+                    logObj = Logger.getLogger();
+                    oPropClass = class(obj.(oProps{pCount}));
+                    write(logObj,'error',['Values of type: ', oPropClass, ' must be scalar, only vectors of type char vector and uint8 are supported']);
+                end
+
                 if isempty(obj.(oProps{pCount})) && ~(ischar(obj.(oProps{pCount})) || isstring(obj.(oProps{pCount})))
                     logObj = Logger.getLogger();
                     write(logObj,'error','Empty values are supported for strings and char vectors only');
-                else
-                    if isa(obj.(oProps{pCount}),'datetime')
-                        if numel(obj.(oProps{pCount})) == 1
-                            dateJ = java.util.Date(int64(posixtime(obj.(oProps{pCount}))*1000));
-                            hMap.put(oProps{pCount},EntityProperty(dateJ));
-                        else
-                            logObj = Logger.getLogger();
-                            write(logObj,'error','datetime values must be scalar and not empty');
-                        end
-                    elseif isa(obj.(oProps{pCount}),'string') && numel(obj.(oProps{pCount})) ~= 1
-                        logObj = Logger.getLogger();
-                        write(logObj,'error','string values must be scalar');
-                    else
-                        hMap.put(oProps{pCount},EntityProperty(obj.(oProps{pCount})));
-                    end
                 end
+
+                % At this point datetime is scalar only based on previous
+                % test, convert to posix time from MATLAB time
+                if isa(obj.(oProps{pCount}),'datetime')
+                    dateJ = java.util.Date(int64(posixtime(obj.(oProps{pCount}))*1000));
+                    hMap.put(oProps{pCount},EntityProperty(dateJ));
+                else
+                    % For all other conversions and marshalling pass to EntityProperty()
+                    hMap.put(oProps{pCount}, EntityProperty(obj.(oProps{pCount})));
+                end
+
             end
 
             % Create a handle to the Java entity

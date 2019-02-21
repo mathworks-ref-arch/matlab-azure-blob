@@ -5,7 +5,7 @@ function  downloadAttributes(obj)
 % retrieve the latest values for the blob's properties and metadata from Azure.
 %
 % Example:
-%  % Here we have an existing container with a number of blobs
+%  % Given an existing container with a number of blobs
 %  azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
 %  % get a list of the blobs in the container
 %  l = azContainer.listBlobs();

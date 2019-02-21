@@ -3,10 +3,10 @@ function expiryTime = getSharedAccessExpiryTime(obj)
 % The output time is of type datetime, expiryTime will be returned with a
 % UTC time zone.
 %
-%    % set the time to the current time and read it back
-%    t1 = myPolicy.getSharedAccessStartTime();
+%    % check the expiry time is greater than the current time
+%    t1 = myPolicy.getSharedAccessExpiryTime();
 %    t2 = datetime('now', 'TimeZone', 'UTC')
-%    if (t1 > t2)
+%    if (t2 > t1)
 %        disp('Access period has expired');
 %    end
 %
@@ -14,9 +14,13 @@ function expiryTime = getSharedAccessExpiryTime(obj)
 % Copyright 2018 The MathWorks, Inc.
 
 % Create a logger object
-%logObj = Logger.getLogger();
+logObj = Logger.getLogger();
 
-expiryTimeJ = obj.Handle.getExpiryAccessStartTime();
-expiryTime = datetime(expiryTimeJ.getTime()/1000,'convertfrom','posixtime','TimeZone','UTC');
+expiryTimeJ = obj.Handle.getSharedAccessExpiryTime();
+if isempty(expiryTimeJ)
+    write(logObj,'error','SharedAccessExpiryTime not set');
+else
+    expiryTime = datetime(expiryTimeJ.getTime()/1000,'convertfrom','posixtime','TimeZone','UTC');
+end
 
 end

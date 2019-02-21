@@ -18,7 +18,7 @@ function blobs = listBlobs(obj, prefix)
 %
 %   myCloudBlobDirectory = container.getDirectoryReference('mydirname')
 %   % List the contents of the CloudBlobDirectory, this should return an empty
-%   % cell array as we've just created the container
+%   % cell array as the container has just been created
 %   blobs = myCloudBlobDirectory.listBlobs()
 %
 %   % Create a blob and upload it to the container in the directory

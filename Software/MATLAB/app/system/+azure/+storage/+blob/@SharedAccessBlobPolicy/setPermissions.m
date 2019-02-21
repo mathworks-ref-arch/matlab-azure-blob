@@ -35,6 +35,8 @@ if numel(permSet) > 0
             enumSetJ = EnumSet.of(com.microsoft.azure.storage.blob.SharedAccessBlobPermissions.READ);
         case 'WRITE'
             enumSetJ = EnumSet.of(com.microsoft.azure.storage.blob.SharedAccessBlobPermissions.WRITE);
+        case 'LIST'
+            enumSetJ = EnumSet.of(com.microsoft.azure.storage.blob.SharedAccessBlobPermissions.LIST);
         otherwise
             str =  char(permSet(1));
             write(logObj,'error',['Invalid SharedAccessBlobPermissions enum value: ',str]);
@@ -65,6 +67,10 @@ if numel(permSet) > 1
                 end
             case 'WRITE'
                 if ~enumSetJ.add(com.microsoft.azure.storage.blob.SharedAccessBlobPermissions.WRITE)
+                    write(logObj,'warning',['Error adding SharedAccessBlobPermissions enum value: ',char(permSet(n))]);
+                end
+            case 'LIST'
+                if ~enumSetJ.add(com.microsoft.azure.storage.blob.SharedAccessBlobPermissions.LIST)
                     write(logObj,'warning',['Error adding SharedAccessBlobPermissions enum value: ',char(permSet(n))]);
                 end
             otherwise

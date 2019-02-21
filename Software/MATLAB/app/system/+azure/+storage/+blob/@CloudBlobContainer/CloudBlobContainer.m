@@ -21,7 +21,7 @@ classdef CloudBlobContainer < azure.object
     % start with a letter or number. Container names may contain only letters,
     % numbers, and the dash (-) character. This package does not validate that a
     % name is valid before passing it to the underlying Azure SDK. However it
-    % does convert to lowercase. If you violate the Azure container naming
+    % does convert to lowercase. Violating the Azure container naming
     % rules, it will cause 400 errors (Bad Request).
     %
     % A container object can also be constructed by passing a Java container

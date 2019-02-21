@@ -14,7 +14,7 @@ function sizeInBytes = getTotalEntitySize(obj, varargin)
 %         dynamicEntity(bCount).initialize();
 %     end
 %
-% You can compute the size of the payload using:
+% Compute the size of the payload using:
 %
 %     dynamicEntity.getTotalSize();
 %

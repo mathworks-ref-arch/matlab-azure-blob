@@ -18,14 +18,14 @@ function setMetadata(obj, varargin)
 %     1x1 cell array
 %       {'key1'}
 %
-%   % Here we set multiple metadata values
+%   % to set multiple metadata values
 %   myKeys = {'key1','key2'};
 %   myVals = {'val1','val2'};
 %   cMap = containers.Map(myKeys, myVals);
 %   azContainer.setMetadata(cMap);
 %   azContainer.uploadMetadata();
 %   m = azContainer.getMetadata();
-%   values(m)
+
 %   ans =
 %     1x2 cell array
 %       {'val1'}    {'val2'}

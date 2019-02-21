@@ -3,7 +3,8 @@ function directory = getDirectoryReference(obj, directoryName)
 % Returns a CloudBlobDirectory object to represent a directory of the given name
 % within the current directory.
 %
-% myCloubBlobDirectory = azContainer.getDirectoryReference('mydirname')
+% Example:
+%    myCloubBlobDirectory = azContainer.getDirectoryReference('mydirname')
 
 % Copyright 2018 The MathWorks, Inc.
 

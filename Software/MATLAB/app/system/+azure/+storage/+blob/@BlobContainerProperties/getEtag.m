@@ -6,7 +6,7 @@ function Etag = getEtag(obj)
 % Etag is returned as a char vector.
 %
 % Example:
-%   % Here we get the properties of an existing container
+%   % Get the properties of an existing container
 %   % and then return the Etag property
 %   azContainer = azure.storage.blob.CloudBlobContainer(azClient,'mytestcontainer');
 %   p = azContainer.getProperties();

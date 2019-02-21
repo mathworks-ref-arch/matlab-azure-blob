@@ -19,8 +19,8 @@ classdef CloudBlockBlob < azure.object
     %   blob = azure.storage.blob.CloudBlockBlob(azContainer, ...
     %             'mydir/mynewblobname.mat', which('SampleData.mat'));
     % Note virtual directory hierarchy in the uploaded blob can be introduced
-    % by prepending it to the name. This method can be used if you wish to
-    % create a virtual directory 'mydir' Azure will represent this as a
+    % by prepending it to the name. This method can be used to create
+    % a virtual directory 'mydir' Azure will represent this as a
     % CloudBlobDirectory. Empty virtual directories are not supported.
     %
     % A BlockBlob can also be created based on a Shared Access Signature for a
@@ -51,8 +51,8 @@ classdef CloudBlockBlob < azure.object
                     % Note, the LocalUploadPath is not set in this case
                     sURI = varargin{1};
                     if isa(sURI,'azure.storage.StorageUri')
-                        obj.Name = string(obj.Handle.getName());
                         obj.Handle = com.microsoft.azure.storage.blob.CloudBlockBlob(sURI.Handle);
+                        obj.Name = char(obj.Handle.getName());
                     else
                         write(logObj,'error','Invalid SAS URI argument, expected an azure.storage.StorageURI');
                     end
@@ -70,7 +70,7 @@ classdef CloudBlockBlob < azure.object
                     if ~ischar(varargin{2})
                         write(logObj,'error','Invalid Blob name argument, expected a character vector');
                     end
-                    obj.Name = varargin{2};
+                    obj.Name = varargin{2}; % already a char
 
                     % Get the reference to the blob and store it as a handle
                     % there are no separators in the name as just the name and

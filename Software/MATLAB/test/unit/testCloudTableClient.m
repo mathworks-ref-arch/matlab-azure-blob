@@ -25,6 +25,8 @@ classdef testCloudTableClient < matlab.unittest.TestCase
         function testSetup(testCase)
             testCase.logObj = Logger.getLogger();
             testCase.logObj.DisplayLevel = 'verbose';
+            % Logger prefix of Azure Data Lake Store Interface, can be used when catching errors
+            testCase.logObj.MsgPrefix = 'Azure:WASB';
         end
     end
 
@@ -504,6 +506,74 @@ classdef testCloudTableClient < matlab.unittest.TestCase
             tableHandle.deleteIfExists();
         end
 
+        function testDoubleDataType(testCase)
+            disp('Running testDoubleDataType');
+            % Connect to an Azure Cloud Storage Account
+            az = azure.storage.CloudStorageAccount;
+            az.loadConfigurationSettings();
+            az.connect();
+            % Create a client Object
+            client = azure.storage.table.CloudTableClient(az);
+            tableHandle = azure.storage.table.CloudTable(client,'TestTable');
+            % Create a table
+            tableHandle.createIfNotExists();
+            % Check if the table exists
+            flag = tableHandle.exists();
+            testCase.assertTrue(flag);
+
+            % Create a sample entity and insert into the database
+            pk = 'Smith';
+            rk = 'John';
+            testValue = rand(1);
+            dynamicEntity = azure.storage.table.DynamicTableEntity;
+            dynamicEntity.addprop('DoubleValue');
+            dynamicEntity.partitionKey = pk;
+            dynamicEntity.rowKey = rk;
+            dynamicEntity.DoubleValue = testValue;
+            dynamicEntity.initialize();
+
+            % Create a table operation to execute on the database
+            tableOperation = azure.storage.table.TableOperation.insertOrReplace(dynamicEntity);
+            tableHandle.execute(tableOperation);
+
+            % Retrieve a single entity
+            % Create a dynamic resolver (return as Java HashMap)
+            dResolver = com.mathworks.azure.sdk.DynamicResolver.getDynamicResolver();
+            tableOperation = azure.storage.table.TableOperation.retrieve(pk, rk, dResolver);
+            results = tableHandle.execute(tableOperation);
+            resultVal = results(1).DoubleValue;
+            testCase.assertEqual(resultVal, testValue);           
+        end
+        
+        function testDoubleDataTypeVector(testCase)
+            disp('Running testDoubleDataTypeVector');
+            % Connect to an Azure Cloud Storage Account
+            az = azure.storage.CloudStorageAccount;
+            az.loadConfigurationSettings();
+            az.connect();
+            % Create a client Object
+            client = azure.storage.table.CloudTableClient(az);
+            tableHandle = azure.storage.table.CloudTable(client,'TestTable');
+            % Create a table
+            tableHandle.createIfNotExists();
+            % Check if the table exists
+            flag = tableHandle.exists();
+            testCase.assertTrue(flag);
+
+            % Create a sample entity and insert into the database
+            pk = 'Smith';
+            rk = 'John';
+            testValue = rand(1,10);
+            dynamicEntity = azure.storage.table.DynamicTableEntity;
+            dynamicEntity.addprop('DoubleValueVector');
+            dynamicEntity.partitionKey = pk;
+            dynamicEntity.rowKey = rk;
+            dynamicEntity.DoubleValueVector = testValue;
+            % verify this fails because trying to create a vector of non
+            % uint8 or char
+            testCase.verifyError(@()dynamicEntity.initialize(), 'Azure:WASB');
+        end
+        
         function testLogicalDataType(testCase)
             disp('Running testLogicalDataType');
             % Connect to an Azure Cloud Storage Account
@@ -522,6 +592,7 @@ classdef testCloudTableClient < matlab.unittest.TestCase
             % Create a sample entity and insert into the database
             pk = 'Smith';
             rk = 'John';
+            % test with true
             testValue = true;
             dynamicEntity = azure.storage.table.DynamicTableEntity;
             dynamicEntity.addprop('LogicalValue');
@@ -541,7 +612,8 @@ classdef testCloudTableClient < matlab.unittest.TestCase
             results = tableHandle.execute(tableOperation);
             resultVal = results(1).LogicalValue;
             testCase.assertEqual(resultVal, testValue);
-
+            
+            % test with false
             testValue = false;
             dynamicEntity = azure.storage.table.DynamicTableEntity;
             dynamicEntity.addprop('myLogicalValue');
@@ -677,7 +749,7 @@ classdef testCloudTableClient < matlab.unittest.TestCase
             dynamicEntity.partitionKey = pk;
             dynamicEntity.rowKey = rk;
             dynamicEntity.myNull = testValue;
-            testCase.verifyError(@()dynamicEntity.initialize(), 'LOGGER:prefix');
+            testCase.verifyError(@()dynamicEntity.initialize(), 'Azure:WASB');
 %             dynamicEntity.initialize();
 %
 %             % Create a table operation to execute on the database
@@ -898,7 +970,6 @@ classdef testCloudTableClient < matlab.unittest.TestCase
             testCase.assertTrue(ischar(resultVal));
         end
 
-
         function testEmptyStrs(testCase)
             disp('Running testEmptyStrs');
             % Connect to an Azure Cloud Storage Account
@@ -967,7 +1038,7 @@ classdef testCloudTableClient < matlab.unittest.TestCase
             dynamicEntity.partitionKey = pk;
             dynamicEntity.rowKey = rk;
             dynamicEntity.myDatetimes = testValue;
-            testCase.verifyError(@()dynamicEntity.initialize(), 'LOGGER:prefix');
+            testCase.verifyError(@()dynamicEntity.initialize(), 'Azure:WASB');
         end
 
         function testStrArray(testCase)
@@ -995,7 +1066,7 @@ classdef testCloudTableClient < matlab.unittest.TestCase
             dynamicEntity.partitionKey = pk;
             dynamicEntity.rowKey = rk;
             dynamicEntity.myStrArray = testValue;
-            testCase.verifyError(@()dynamicEntity.initialize(), 'LOGGER:prefix');
+            testCase.verifyError(@()dynamicEntity.initialize(), 'Azure:WASB');
         end
 
     end % methods

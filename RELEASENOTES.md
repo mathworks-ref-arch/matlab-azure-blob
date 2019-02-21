@@ -1,6 +1,16 @@
 # MATLAB Interface *for Windows Azure Storage Blob*
 # Release Notes
 
+## Release 0.7.1 February 18th 2019
+* Improved logging infrastructure
+* Improved documentation
+* Fixed a bug when creating a CloudBlockBlob using a StorageUri
+* Fixed a bug in getSharedAccessExpiryTime()
+* Fixed a bug in DynamicTableEntity where storing vectors (not supported) could silently fail
+* Added SharedAccessBlobPermissions LIST support
+* Made object Name properties consistently char vectors
+* Added CloudBlobContainer.generateSharedAccessSignature() method
+
 ## Release 0.7.0 December 20th 2018
 * Improved Table data type support
 * Minor bug fixes and documentation improvements
@@ -144,6 +154,5 @@
 * Initial release with support for Blob Storage
 
 ------------
-![MathWorks Logo](Documentation/Images/bg_header_mwlogo_notag.jpg)
 
 [//]: #  (Copyright 2017, The MathWorks, Inc.)

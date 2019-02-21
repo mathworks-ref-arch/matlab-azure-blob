@@ -4,11 +4,11 @@
 Azure™ Table storage stores large amounts of structured data. The service is a NoSQL datastore which accepts authenticated calls from inside and outside the Azure cloud. Azure tables are ideal for storing structured, non-relational data. Common uses of Table storage include:
 
 - Storing TBs of structured data capable of serving web scale applications
-- Storing datasets that don't require complex joins, foreign keys, or stored procedures and can be denormalized for fast access
+- Storing datasets that do not require complex joins, foreign keys, or stored procedures and can be denormalized for fast access
 - Quickly querying data using a clustered index
 - Accessing data using the OData protocol and LINQ queries with WCF Data Service .NET Libraries
 
-You can use Table storage to store and query huge sets of structured, non-relational data, and your tables will scale as demand increases.
+Table storage can be used to store and query huge sets of structured, non-relational data, and tables will scale as demand increases.
 
 ### Table Storage concepts
 There are two ways of accessing table storage, using the Table API or via Azure Cosmos DB Table API which is a premium offering for table storage that offers throughput-optimized tables, global distribution and automatic secondary indexes.
@@ -19,7 +19,7 @@ Table storage contains the following components:
 
 *Storage Accounts*: All access to Azure Storage is done through a storage account. See Azure Storage Scalability and Performance Targets for details about storage account capacity.
 
-*Table*: A table is a collection of entities. Tables don't enforce a schema on entities, which means a single table can contain entities that have different sets of properties.
+*Table*: A table is a collection of entities. Tables do not enforce a schema on entities, which means a single table can contain entities that have different sets of properties.
 
 *Entity*: An entity is a set of properties, similar to a database row. An entity in Azure Storage can be up to 1MB in size. An entity in Azure Cosmos DB can be up to 2MB in size.
 
@@ -37,30 +37,30 @@ For details about naming tables and properties, see [Understanding the Table Ser
 This package is used to enable the use of the Azure Table Storage service with MATLAB. In the Software/MATLAB directory run the *startup.m* to make the software available in the MATLAB environment.
 
 ### Create and configure a storage account
-If this is the first time you are using the interface, as a one-time operation per session (assuming you are using one storage account), you will need to setup the Cloud Storage Account. This is done using:
+If this is the first time using the interface, as a one-time operation per session (assuming only one storage account is used), setup the Cloud Storage Account. This is done using:
 ```
 % Create a handle to the storage account
->> az = azure.storage.CloudStorageAccount;
+az = azure.storage.CloudStorageAccount;
 ```
 
-The storage account will need to be configured to work with your Azure account or the development emulator. By default the UseDevelopmentStorage flag is set to *true* and so the emulator running on localhost will be used. For details of the development emulator see here: [https://docs.microsoft.com/en-us/azure/storage/storage-use-emulator](https://docs.microsoft.com/en-us/azure/storage/storage-use-emulator). To use Azure itself, disable this setting as follows:
+The storage account will need to be configured to work with a Azure account or the development emulator. By default the UseDevelopmentStorage flag is set to *true* and so the emulator running on localhost will be used. For details of the development emulator see here: [https://docs.microsoft.com/en-us/azure/storage/storage-use-emulator](https://docs.microsoft.com/en-us/azure/storage/storage-use-emulator). To use Azure itself, disable this setting as follows:
 ```
->> az.UseDevelopmentStorage = false;
+az.UseDevelopmentStorage = false;
 ```
 
 The following allows one to specify the credentials for the Azure storage account of choice.
 ```
->> az.AccountName = 'myaccountname'
->> az.AccountKey  = 'SVn445qMEABafld3k225l*****[REDACTED_FOR_SECURITY]****RfIhAQtvYzAQr0328/d030GGw=='
+az.AccountName = 'myaccountname'
+az.AccountKey  = 'SVn445qMEABafld3k225l*****[REDACTED_FOR_SECURITY]****RfIhAQtvYzAQr0328/d030GGw=='
 ```
 
 This can be provisioned in the [Azure Portal](https://portal.azure.com):
 
 ![Portal](Images/AzureStorageKeys.png)
 
-Rather than configuring the storage account credentials in code which requires the sensitive account key to be embedded in code we can load it and other related settings from a file which is more readily protected.
+Rather than configuring the storage account credentials in code which requires the sensitive account key to be embedded in code load it and other related settings from a file which is more readily protected.
 ```
->> az.loadConfigurationSettings();
+az.loadConfigurationSettings();
 ```
 Storing the settings in a file also allows for more simple management of multiple storage accounts. The file is a short json file stored in the config directory by default, the template for which is as follows:
 ```
@@ -75,8 +75,8 @@ Storing the settings in a file also allows for more simple management of multipl
 
 The account is now ready to connect. When fully configured this looks like:
 ```
->> az.connect()
->> az
+az.connect()
+az
 
 az =
 
@@ -94,9 +94,9 @@ az =
 ```
 
 ### Create a Client
-Now that we have a fully configured connection we get a handle to a client that the is required to perform CRUD (Create, Retrieve, Update, Delete) operations on Table storage.
+With a fully configured connection get a handle to a client that is required to perform CRUD (Create, Retrieve, Update, Delete) operations on Table storage.
 ```
->> azClient = azure.storage.table.CloudTableClient(az)
+azClient = azure.storage.table.CloudTableClient(az)
 
 azClient =
 
@@ -106,24 +106,24 @@ azClient =
 ```
 Alternatively, it is possible to create a client using:
 ```
->> azClient = az.getCloudTableClient();
+azClient = az.getCloudTableClient();
 ```
-We can now operate the Windows Azure Table storage from MATLAB.
+Now Windows Azure Table storage can be accessed from MATLAB.
 
 See [Logging](Logging.md) for details of enabling verbose output during development and testing.
 
 ### Create a table
-A *CloudTableClient* object lets you get reference objects for tables and entities. The following code creates a *CloudTableClient* object and uses it to create a new *CloudTable* object which represents a table called *sampletable*. A *CloudTable* object is required for most Table operations.
+A *CloudTableClient* object gets reference objects for tables and entities. The following code creates a *CloudTableClient* object and uses it to create a new *CloudTable* object which represents a table called *sampletable*. A *CloudTable* object is required for most Table operations.
 
 ```
->> tableHandle = azure.storage.table.CloudTable(azClient,'sampletable');
->> tableHandle.createIfNotExists();
+tableHandle = azure.storage.table.CloudTable(azClient,'sampletable');
+tableHandle.createIfNotExists();
 ```
 
 ### List existing tables
 To get a list of tables, call the *CloudTableClient.listTables()* method to retrieve an list of table names.
 ```
->> tableList = azClient.listTables
+tableList = azClient.listTables
 
 tableList =
 
@@ -135,7 +135,7 @@ tableList =
 The output of this method is an array of Table handles for accessing the tables on Azure. This list can be easily converted into a MATLAB table using:
 
 ```
->> table({tableList.Name}','VariableNames',{'Name'})
+table({tableList.Name}','VariableNames',{'Name'})
 
 ans =
 
@@ -166,50 +166,50 @@ Entities map to objects. This can be achieved either by using the *DynamicTableE
 
 ```
 % Add the first and last name
->> dynamicEntity = azure.storage.table.DynamicTableEntity;
->> dynamicEntity.rowKey = 'John';
->> dynamicEntity.partitionKey = 'Smith';
+dynamicEntity = azure.storage.table.DynamicTableEntity;
+dynamicEntity.rowKey = 'John';
+dynamicEntity.partitionKey = 'Smith';
 
 % Dynamically define a property to store a value and assign a random number to it.
->> dynamicEntity.addprop('Value');
->> dynamicEntity.Value = rand(1,1);
->> dynamicEntity.initialize();
+dynamicEntity.addprop('Value');
+dynamicEntity.Value = rand(1,1);
+dynamicEntity.initialize();
 
 ```
 
 Table operations involving entities require a *TableOperation* object. This object defines the operation to be performed on an entity, which can be executed with a *CloudTable* object. The *TableOperation.insertOrReplace()* can be used to create a TableOperation object to insert an entity into a table. Finally, the code calls the execute method on the *CloudTable* object, specifying the "sampletable" table and the new *TableOperation*, which then sends a request to the storage service to insert the new customer entity into the "sampletable" table, or replace the entity if it already exists.
 
 ```
->> tableOperation = azure.storage.table.TableOperation.insert(dynamicEntity, true);
->> tableHandle.execute(tableOperation);
+tableOperation = azure.storage.table.TableOperation.insert(dynamicEntity, true);
+tableHandle.execute(tableOperation);
 ```
 
 Methods to merely insert, replace/update or merge entities operate in the same manner.
-To update all of an entity's property values, call the update method. If the entity that is being updated doesn't already exist, then the update operation will fail. To store an entity whether it exists or not, use *insertOrReplace()* to perform an upsert.
+To update all of an entity's property values, call the update method. If the entity that is being updated does not already exist, then the update operation will fail. To store an entity whether it exists or not, use *insertOrReplace()* to perform an upsert.
 
-The *update()* method replaces all properties and values of an existing entity, which you can also use to remove properties from an existing entity. You can use the *merge()* method to update an existing entity with new or modified property values without completely replacing the entity.
+The *update()* method replaces all properties and values of an existing entity, which can also be used to remove properties from an existing entity. The *merge()* method can be used to update an existing entity with new or modified property values without completely replacing the entity.
 
 ### Insert a batch of entities to a table
-You can insert a batch of entities to the table service in one write operation. This is handled automatically via vectorization under the API on TableOperation object. The implementation uses a *TableBatchOperation* object under the hood, which sends the batch of table operations to the storage service in a single request. For example, let us create a 100 entities as a batch operation.
+Inserting a batch of entities to the table service in one write operation is handled automatically via vectorization under the API on TableOperation object. The implementation uses a *TableBatchOperation* object internally, which sends the batch of table operations to the storage service in a single request. For example, to create a 100 entities as a batch operation:
 
 ```
 % Create a number of sample entities and insert into the database
 % Partition them appropriately modulo 20
->> batchSize = 100;
->> partitionSize = 20;
->> for bCount = 1:batchSize
->>     dynamicEntity(bCount) = azure.storage.table.DynamicTableEntity;
->>     dynamicEntity(bCount).addprop('Name');
->>     dynamicEntity(bCount).Name = ['john',num2str(bCount)];
->>     dynamicEntity(bCount).partitionKey = ['pk', num2str(ceil(bCount/partitionSize))];
->>     dynamicEntity(bCount).rowKey = ['rk', char(java.util.UUID.randomUUID())];
->>     dynamicEntity(bCount).addprop('Value');
->>     dynamicEntity(bCount).Value = rand(1,1);
->>     dynamicEntity(bCount).initialize();
->> end
+batchSize = 100;
+partitionSize = 20;
+for bCount = 1:batchSize
+    dynamicEntity(bCount) = azure.storage.table.DynamicTableEntity;
+    dynamicEntity(bCount).addprop('Name');
+    dynamicEntity(bCount).Name = ['john',num2str(bCount)];
+    dynamicEntity(bCount).partitionKey = ['pk', num2str(ceil(bCount/partitionSize))];
+    dynamicEntity(bCount).rowKey = ['rk', char(java.util.UUID.randomUUID())];
+    dynamicEntity(bCount).addprop('Value');
+    dynamicEntity(bCount).Value = rand(1,1);
+    dynamicEntity(bCount).initialize();
+end
 ```
 
-The batch operations is performed as a single atomic operation on the Azure Table API service are constrained by a few noteworthy restrictions:
+The batch operations performed as a single atomic operation on the Azure Table API service are constrained by a few noteworthy restrictions:
 * A single batch size cannot exceed 100 entities
 * All entities in a single batch need to have the same partition key
 * The total payload of a batch operation is limited to 4MB
@@ -217,22 +217,22 @@ The batch operations is performed as a single atomic operation on the Azure Tabl
 Since the example above uses multiple partitionKeys to partition the data, the insertion will need to adhere to batches of 20 entities with the same key.
 
 ```
->> tableOperation = azure.storage.table.TableOperation.insert(dynamicEntity(1:20), true); % vectorized
->> tableHandle.execute(tableOperation);
+tableOperation = azure.storage.table.TableOperation.insert(dynamicEntity(1:20), true); % vectorized
+tableHandle.execute(tableOperation);
 ```
 
 ### Retrieve a single entity
-To query a table for entities in a partition, you can use a *TableQuery*. Call *TableQuery.where* to create a query on a particular table that returns a specified result. For example, a filter for entities where 'Smith' is the partition key. *TableQuery.generateFilterCondition* is a helper method to create filters for queries. When the query is executed with a call to execute on the *CloudTable* object, it returns an array of *TableResult* objects. For example to retrieve the entity that was inserted earlier.
+To query a table for entities in a partition, use a *TableQuery*. Call *TableQuery.where* to create a query on a particular table that returns a specified result. For example, a filter for entities where 'Smith' is the partition key. *TableQuery.generateFilterCondition* is a helper method to create filters for queries. When the query is executed with a call to execute on the *CloudTable* object, it returns an array of *TableResult* objects. For example to retrieve the entity that was inserted earlier.
 
 ```
 % Create a dynamic resolver (return as Java HashMap)
->> dResolver = com.mathworks.azure.sdk.DynamicResolver.getDynamicResolver();
+dResolver = com.mathworks.azure.sdk.DynamicResolver.getDynamicResolver();
 
-% Specify your partition key and row key, pk & rk.
->> pk = 'Smith';
->> rk = 'John';
->> tableOperation = azure.storage.table.TableOperation.retrieve(pk, rk, dResolver);
->> results = tableHandle.execute(tableOperation)
+% Specify the partition key and row key, pk & rk.
+pk = 'Smith';
+rk = 'John';
+tableOperation = azure.storage.table.TableOperation.retrieve(pk, rk, dResolver);
+results = tableHandle.execute(tableOperation)
 
 results =
 
@@ -247,18 +247,18 @@ Note that in this case, the returned TableResults omit the partition and row key
 This is similar to retrieving a single entity but is much simpler since the return is a *DynamicTableEntity*. For example, to return all entities from the first partition in the example above.
 ```
 % Fetch the elements from the first partition
->> pk = 'pk1';
+pk = 'pk1';
 
 % Setup the query
->> queryComp = azure.storage.table.QueryComparisons.EQUAL;
->> filterCondition = azure.storage.table.TableQuery.generateFilterCondition('PartitionKey', queryComp, pk);
+queryComp = azure.storage.table.QueryComparisons.EQUAL;
+filterCondition = azure.storage.table.TableQuery.generateFilterCondition('PartitionKey', queryComp, pk);
 
 % Create a new table query;
->> tableQuery = azure.storage.table.TableQuery;
->> finalQuery = tableQuery.where(filterCondition);
+tableQuery = azure.storage.table.TableQuery;
+finalQuery = tableQuery.where(filterCondition);
 
 % Query the database
->> queryResults = tableHandle.execute(finalQuery);
+queryResults = tableHandle.execute(finalQuery);
 
 queryResults =
 
@@ -270,7 +270,7 @@ queryResults =
 
 Inspecting a single result:
 ```
->> queryResults(1)
+queryResults(1)
 
 ans =
 
@@ -285,7 +285,7 @@ ans =
 
 This array can be easily converted to a MATLAB table using:
 ```
->> tbl = table(queryResults)
+tbl = table(queryResults)
 
 tbl =
 
@@ -319,11 +319,11 @@ tbl =
 The query comparisons can be used to create more complex filter conditions to fetch ranges of entities from the Table Service.
 
 ### Delete an entity
-Entities can be easily deleted after you have retrieved it. Once the entity is retrieved, call *TableOperation.delete* with the entity to delete. Then call *execute* on the *CloudTable* object. The following code deletes the first entity in the partition above.
+Entities can be easily deleted after being retrieved. Once the entity is retrieved, call *TableOperation.delete* with the entity to delete. Then call *execute* on the *CloudTable* object. The following code deletes the first entity in the partition above.
 
 ```
->> tableDeleteOperation = azure.storage.table.TableOperation.delete(queryResults(1));
->> tableHandle.execute(tableDeleteOperation);
+tableDeleteOperation = azure.storage.table.TableOperation.delete(queryResults(1));
+tableHandle.execute(tableDeleteOperation);
 ```
 
 When querying partition with key "pk1" like in the code above, the table will only return 19 elements since the first element has been deleted.
@@ -332,7 +332,7 @@ When querying partition with key "pk1" like in the code above, the table will on
 It is possible to *delete* a table from a storage account or attempt to delete if a table exists using the *deleteIfExists*.
 
 ```
->> tableHandle.deleteIfExists();
+tableHandle.deleteIfExists();
 ```
 
 A table which has been deleted will be unavailable to be recreated for a period of time following the deletion, usually less than forty seconds. If creation is attempted, the Azure table service will error out with a "Conflict" error. This is pertinent when running the unit tests in an automated fashion.
@@ -342,29 +342,29 @@ A table which has been deleted will be unavailable to be recreated for a period 
 
 Shared Access Signatures allow granular access to tables, queues, blob containers, and blobs. A SAS token can be configured to provide specific access rights, i.e. add, query, update, & delete. to a specific table, key range within a table; for a specified time period or without any limit. The SAS token appears as part of the resource’s URI as a series of query parameters, e.g. <https://myaccountname.table.core.windows.net/mbsampletable?sv=2017-04-17&si=myidentifer&tn=mbsampletable&sig=eaGeUXr4yMvww%2BVTL5zIAmhkdjYwhzBVSM7y%2FPX8bdI%3D>   
 
-Note, because the URL provides access to the table we do not need a client and the associated authentication in this case. Currently Service SASs are supported, as described, however Account SASs are not supported.
+Note, because the URL provides access to the table an authenticated client is not needed in this case. Currently Service SASs are supported, as described, however Account SASs are not supported.
 
 ```
-% A SAS URL which has been provided to us for an existing table, it is first converted to a MATLAB URI object
->> SASMatlabURI = matlab.net.URI('https://myaccountname.table.core.windows.net/mbsampletable?sv=2017-04-17&si=myidentifer&tn=mbsampletable&sig=eaGeUXr4yMvww%2BVTL5zIAmhkdjYwhzBVSM7y%2FPX8bdI%3D');
+% A SAS URL which has been provided for an existing table, it is first converted to a MATLAB URI object
+SASMatlabURI = matlab.net.URI('https://myaccountname.table.core.windows.net/mbsampletable?sv=2017-04-17&si=myidentifer&tn=mbsampletable&sig=eaGeUXr4yMvww%2BVTL5zIAmhkdjYwhzBVSM7y%2FPX8bdI%3D');
 
 % Create a StorageURI object based on this
->> SASStorageURI = azure.storage.StorageUri(SASMatlabURI);
+SASStorageURI = azure.storage.StorageUri(SASMatlabURI);
 
 % Create a CloudTable object via the StorageURI object
->> tableHandle = azure.storage.table.CloudTable(SASStorageURI);
+tableHandle = azure.storage.table.CloudTable(SASStorageURI);
 
 % Return the name of the table
->> tableHandle.Name
+tableHandle.Name
 
 % As before build a Table Operation
->> pk = 'Smith';
->> rk = 'John';
->> dResolver = com.mathworks.azure.sdk.DynamicResolver.getDynamicResolver();
->> tableOperation = azure.storage.table.TableOperation.retrieve(pk, rk, dResolver)
+pk = 'Smith';
+rk = 'John';
+dResolver = com.mathworks.azure.sdk.DynamicResolver.getDynamicResolver();
+tableOperation = azure.storage.table.TableOperation.retrieve(pk, rk, dResolver)
 
 % Query the table using the handle and operation
->> results = tableHandle.execute(tableOperation)
+results = tableHandle.execute(tableOperation)
 results =
 
   TableResult with properties:
@@ -378,38 +378,38 @@ A SAS may often be provided from a third party source e.g. the Azure Storage Exp
 
 ```
 % First create a shared access policy, setting permissions and times
->> myPolicy = azure.storage.table.SharedAccessTablePolicy();
->> permSet(1) = azure.storage.table.SharedAccessTablePermissions.QUERY;
->> myPolicy.setPermissions(permSet);
+myPolicy = azure.storage.table.SharedAccessTablePolicy();
+permSet(1) = azure.storage.table.SharedAccessTablePermissions.QUERY;
+myPolicy.setPermissions(permSet);
 
 % Allow access for the next 24 hours
->> t1 = datetime('now');
->> t2 = t1 + hours(24);
->> myPolicy.setSharedAccessExpiryTime(t2);
+t1 = datetime('now');
+t2 = t1 + hours(24);
+myPolicy.setSharedAccessExpiryTime(t2);
 
 % Allow a margin of 15 minutes for clock variances
->> t3 = t1 - minutes(15);
->> myPolicy.setSharedAccessStartTime(t3);
+t3 = t1 - minutes(15);
+myPolicy.setSharedAccessStartTime(t3);
 
 
 % Set row and partition restrictions
->> accessPolicyIdentifier = 'myAccessPolicyIdentifier';
->> startPartitionKey = 'Smith';
->> startRowKey = 'John';
->> endPartitionKey = 'Smith';
->> endRowKey = 'John';
+accessPolicyIdentifier = 'myAccessPolicyIdentifier';
+startPartitionKey = 'Smith';
+startRowKey = 'John';
+endPartitionKey = 'Smith';
+endRowKey = 'John';
 
 % Generate the SAS, note the leading ? and URI are not included
->> sas = tableHandle.generateSharedAccessSignature(myPolicy,accessPolicyIdentifier,startPartitionKey,startRowKey,endPartitionKey,endRowKey)
+sas = tableHandle.generateSharedAccessSignature(myPolicy,accessPolicyIdentifier,startPartitionKey,startRowKey,endPartitionKey,endRowKey)
 
 sas =
 
     'sig=2wOZrXmqMQgJ6KPJXwCVK3D9hxpcY166eMJ8mxDBZdc%3D&st=2018-05-10T08%3A38%3A43Z&epk=Smith&se=2018-05-11T08%3A53%3A43Z&sv=2017-04-17&si=myAccessPolicyIdentifier&tn=sampletable&sp=r&srk=John&spk=Smith&erk=John'
 
 % build the full SAS
->> myUri = tableHandle.getUri;
+myUri = tableHandle.getUri;
 
->> fullSas = [char(myUri.EncodedURI),'?',sas]
+fullSas = [char(myUri.EncodedURI),'?',sas]
 
 fullSas =
 
@@ -418,7 +418,7 @@ fullSas =
 ```
 
 ## Notes:
-[Microsoft® Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/) is a free, standalone app from Microsoft that enables you to work visually with Azure Storage data on Windows®, macOS®, and Linux.
+[Microsoft® Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/) is a free, standalone application from Microsoft that provides a GUI for Azure Storage data on Windows®, macOS®, and Linux.
 When installed, it is possible to bring this up from MATLAB using the *AzureStorageExplorer* command. For more information, please see: https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer
 
 

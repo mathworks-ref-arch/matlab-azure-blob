@@ -31,10 +31,11 @@ classdef TableResult < azure.object
     % For further information see:
     % https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model
     %
-    % A char array will be stored in concatenated form and returend as a
+    % A char array will be stored in concatenated form and returned as a
     % char vector.
     % string arrays are not supported by the Azure Table API.
     % datetime values must be scalar and not empty.
+    % Vectors are only supported for chars and uint8.
 
     % Copyright 2018 The MathWorks, Inc.
 

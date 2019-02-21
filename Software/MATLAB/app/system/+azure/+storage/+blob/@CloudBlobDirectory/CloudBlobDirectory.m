@@ -50,7 +50,7 @@ methods
                 CloudBlobDirectoryJ = p.Results.CloudBlobDirectoryJ;
 
                 obj.Handle = CloudBlobDirectoryJ;
-                obj.Name = obj.getPrefix();
+                obj.Name = char(obj.getPrefix());
 
             case 2
                 % form: CloudBlobDirectory(container, blobname)
@@ -69,7 +69,7 @@ methods
                 delimiter = container.ServiceClient.getDirectoryDelimiter();
                 adjustedBlobName = strip(blobName, 'right', delimiter);
                 obj.Handle = container.Handle.getDirectoryReference(adjustedBlobName);
-                obj.Name = obj.getPrefix();
+                obj.Name = char(obj.getPrefix());
 
             case 4
                 % form:  CloudBlobDirectory(uri, prefixArg, client, container)
@@ -89,7 +89,7 @@ methods
 
                 % TODO check if this is implemented still in v8.0.0
                 obj.Handle = com.microsoft.azure.storage.blob.CloudBlobDirectory(uri.Handle, prefixArg, client.Handle, container.Handle);
-                obj.Name = obj.getPrefix();
+                obj.Name = char(obj.getPrefix());
 
             otherwise
                 obj.Prefix = [];

@@ -23,14 +23,14 @@ classdef CloudStorageAccount < azure.object
     %    az.loadConfigurationSettings();
     %    az.connect();
     %
-    % If you wish to use a configuration/credentials file with a non default
+    % To use a configuration/credentials file with a non default
     % (cloudstorageaccount.json) name then create the CloudStorageAccount as
     % follows specifying the file path:
     %    az = azure.storage.CloudStorageAccount;
     %    az.loadConfigurationSettings('/home/user/mydir/myconfigfile.json');
     %    az.connect();
     %
-    % This approach can be useful if you need multiple accounts at the same time
+    % This approach can be useful if multiple accounts are needed at the same time
     % for example development and production or if one is also using the related
     % Cosmos DB functionality which requires Cosmos DB credentials for its
     % CloudStorageAccount object.
@@ -74,6 +74,10 @@ classdef CloudStorageAccount < azure.object
         function obj = CloudStorageAccount(~, varargin)
             % Create a logger object
             logObj = Logger.getLogger();
+            % Logger prefix of Azure Data Lake Store Interface, can be used when catching errors
+            logObj.MsgPrefix = 'Azure:WASB';
+            % In normal operation use default level: debug
+            % logObj.DisplayLevel = 'verbose';
 
             if verLessThan('matlab','9.2') % R2017a
                 write(logObj,'error','MATLAB Release 2017a or newer is required');

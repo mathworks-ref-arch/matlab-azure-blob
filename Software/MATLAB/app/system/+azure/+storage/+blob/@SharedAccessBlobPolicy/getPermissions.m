@@ -39,6 +39,8 @@ while (pIterator.hasNext())
             permSet(end + 1) = azure.storage.blob.SharedAccessBlobPermissions.READ; %#ok<AGROW>
         case 'WRITE'
             permSet(end + 1) = azure.storage.blob.SharedAccessBlobPermissions.WRITE; %#ok<AGROW>
+        case 'LIST'
+            permSet(end + 1) = azure.storage.blob.SharedAccessBlobPermissions.LIST; %#ok<AGROW>
         otherwise
             str = char(permJ.toString);
             write(logObj,'error',['Invalid SharedAccessBlobPermissions enum value: ', str]);

@@ -4,7 +4,7 @@ function containerMapResult = getMetadata(obj, varargin)
 % containers.Map is returned.
 %
 % Example:
-%  % Here we have an existing container with a number of blobs
+%  % Given an existing container with a number of blobs
 %  azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
 %  % get a list of the blobs in the container
 %  l = azContainer.listBlobs();

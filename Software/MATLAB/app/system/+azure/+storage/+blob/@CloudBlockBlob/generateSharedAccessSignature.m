@@ -1,19 +1,21 @@
 function sigStr = generateSharedAccessSignature(obj, policy, groupId)
-% GENERATESHAREDACCESSSIGNATURE Returns a policy string
+% GENERATESHAREDACCESSSIGNATURE Returns a shared access signature (SAS) string
 % Returns a shared access signature for the blob using the specified group
 % policy identifier and operation context. Note this does not contain the
-% leading "?".
+% leading "?". A character vector is returned.
 %
+% Example:
 %    % configure a client & connect to Azure
 %    az = azure.storage.CloudStorageAccount;
 %    az.loadConfigurationSettings();
 %    az.connect();
 %    % create a container
-%    container = azure.storage.blob.CloudBlobContainer(client,'mycontainer')
+%    azClient = azure.storage.blob.CloudBlobClient(az)
+%    container = azure.storage.blob.CloudBlobContainer(azClient,'mycontainer')
 %    container.createIfNotExists()
 %    % create a shared access policy
 %    myPolicy = azure.storage.blob.SharedAccessBlobPolicy();
-%    permSet(1) = azure.storage.blob.SharedAccessBlobPermissions.ADD;
+%    permSet(1) = azure.storage.blob.SharedAccessBlobPermissions.LIST;
 %    permSet(2) = azure.storage.blob.SharedAccessBlobPermissions.READ;
 %    myPolicy.setPermissions(permSet);
 %    t1 = datetime('now');

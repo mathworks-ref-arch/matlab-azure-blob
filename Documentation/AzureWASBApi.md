@@ -70,14 +70,14 @@
      az.loadConfigurationSettings();
      az.connect();
  
-  If you wish to use a configuration/credentials file with a non default
+  To use a configuration/credentials file with a non default
   (cloudstorageaccount.json) name then create the CloudStorageAccount as
   follows specifying the file path:
      az = azure.storage.CloudStorageAccount;
      az.loadConfigurationSettings('/home/user/mydir/myconfigfile.json');
      az.connect();
  
-  This approach can be useful if you need multiple accounts at the same time
+  This approach can be useful if multiple accounts are needed at the same time
   for example development and production or if one is also using the related
   Cosmos DB functionality which requires Cosmos DB credentials for its
   CloudStorageAccount object.
@@ -297,7 +297,7 @@
   Etag is returned as a char vector.
  
   Example:
-    % Here we get the properties of an existing container
+    % Get the properties of an existing container
     % and then return the Etag property
     azContainer = azure.storage.blob.CloudBlobContainer(azClient,'mytestcontainer');
     p = azContainer.getProperties();
@@ -328,7 +328,7 @@
   blob.
  
   Example:
-   % Here we have an existing container with a number of blobs
+   % Given an existing container with a number of blobs
    azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
    % get a list of the blobs in the container
    l = azContainer.listBlobs();
@@ -497,7 +497,7 @@
   start with a letter or number. Container names may contain only letters,
   numbers, and the dash (-) character. This package does not validate that a
   name is valid before passing it to the underlying Azure SDK. However it
-  does convert to lowercase. If you violate the Azure container naming
+  does convert to lowercase. Violating the Azure container naming
   rules, it will cause 400 errors (Bad Request).
  
   A container object can also be constructed by passing a Java container
@@ -617,6 +617,51 @@
 
 
 ```
+### @CloudBlobContainer/generateSharedAccessSignature.m
+```notalanguage
+  GENERATESHAREDACCESSSIGNATURE Returns a shared access signature (SAS) string
+  Returns a shared access signature for the blob using the specified group
+  policy identifier and operation context. Note this does not contain the
+  leading "?". A character vector is returned.
+ 
+  Example:
+     % configure a client & connect to Azure
+     az = azure.storage.CloudStorageAccount;
+     az.loadConfigurationSettings();
+     az.connect();
+     % create a container
+     azClient = azure.storage.blob.CloudBlobClient(az)
+     container = azure.storage.blob.CloudBlobContainer(azClient,'mycontainer')
+     container.createIfNotExists()
+     % create a shared access policy
+     myPolicy = azure.storage.blob.SharedAccessBlobPolicy();
+     permSet(1) = azure.storage.blob.SharedAccessBlobPermissions.LIST;
+     permSet(2) = azure.storage.blob.SharedAccessBlobPermissions.READ;
+     myPolicy.setPermissions(permSet);
+     t1 = datetime('now');
+     t2 = t1 + hours(24);
+     myPolicy.setSharedAccessExpiryTime(t2);
+     t3 = t1 - minutes(15);
+     myPolicy.setSharedAccessStartTime(t3);
+     % generate the signature as follows
+     % blob URI + '?' + Signature string
+     % If there is no container level policy in use then this can be set to ''
+     sas = container.generateSharedAccessSignature(myPolicy,'myContainerLevelAccessPolicy')
+     sas =
+     'sig=eqqgphDjJv0uat3v%2B%2BlPqYUpJFA7ZaXe5eaIEvFIRX4%3D&st=2018-05-09T16%3A03%3A48Z&se=2018-05-10T16%3A18%3A48Z&sv=2017-04-17&si=myContainerLevelAccessPolicy&sp=rac&sr=b'
+     myUri = container.getUri;
+     fullSas = [char(myUri.EncodedURI),'?',sas];
+ 
+     % This SAS can now be used by 3rd parties without credentials based access
+     SASStorageUri = azure.storage.StorageUri(matlab.net.URI(fullSas));
+     SASContainer = azure.storage.blob.CloudBlobContainer(SASStorageUri);
+     blobList = SASContainer.listBlobs();
+     myBlob = myList{1};
+     myBlob.download();
+
+
+
+```
 ### @CloudBlobContainer/getBlockBlobReference.m
 ```notalanguage
   GETBLOBREFERENCE Method to create reference(s) to WASB CloudBlockBlob(s)
@@ -642,7 +687,8 @@
   Returns a CloudBlobDirectory object to represent a directory of the given name
   within the current directory.
  
-  myCloubBlobDirectory = azContainer.getDirectoryReference('mydirname')
+  Example:
+     myCloubBlobDirectory = azContainer.getDirectoryReference('mydirname')
 
 
 
@@ -674,7 +720,7 @@
   GETPROPERTIES Returns the properties for the container
  
   Example:
-    % Here we get the properties of an existing container
+    % Get the properties of an existing container
     % and then return the Etag property
     azContainer = azure.storage.blob.CloudBlobContainer(azClient,'mytestcontainer');
     p = azContainer.getProperties();
@@ -826,17 +872,13 @@
       1x1 cell array
         {'key1'}
  
-    % Here we set multiple metadata values
+    % to set multiple metadata values
     myKeys = {'key1','key2'};
     myVals = {'val1','val2'};
     cMap = containers.Map(myKeys, myVals);
     azContainer.setMetadata(cMap);
     azContainer.uploadMetadata();
     m = azContainer.getMetadata();
-    values(m)
-    ans =
-      1x2 cell array
-        {'val1'}    {'val2'}
 
 
 
@@ -955,7 +997,7 @@
  
     myCloudBlobDirectory = container.getDirectoryReference('mydirname')
     % List the contents of the CloudBlobDirectory, this should return an empty
-    % cell array as we've just created the container
+    % cell array as the container has just been created
     blobs = myCloudBlobDirectory.listBlobs()
  
     % Create a blob and upload it to the container in the directory
@@ -1000,8 +1042,8 @@
     blob = azure.storage.blob.CloudBlockBlob(azContainer, ...
               'mydir/mynewblobname.mat', which('SampleData.mat'));
   Note virtual directory hierarchy in the uploaded blob can be introduced
-  by prepending it to the name. This method can be used if you wish to
-  create a virtual directory 'mydir' Azure will represent this as a
+  by prepending it to the name. This method can be used to create
+  a virtual directory 'mydir' Azure will represent this as a
   CloudBlobDirectory. Empty virtual directories are not supported.
  
   A BlockBlob can also be created based on a Shared Access Signature for a
@@ -1112,7 +1154,7 @@
   retrieve the latest values for the blob's properties and metadata from Azure.
  
   Example:
-   % Here we have an existing container with a number of blobs
+   % Given an existing container with a number of blobs
    azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
    % get a list of the blobs in the container
    l = azContainer.listBlobs();
@@ -1145,21 +1187,23 @@
 ```
 ### @CloudBlockBlob/generateSharedAccessSignature.m
 ```notalanguage
-  GENERATESHAREDACCESSSIGNATURE Returns a policy string
+  GENERATESHAREDACCESSSIGNATURE Returns a shared access signature (SAS) string
   Returns a shared access signature for the blob using the specified group
   policy identifier and operation context. Note this does not contain the
-  leading "?".
+  leading "?". A character vector is returned.
  
+  Example:
      % configure a client & connect to Azure
      az = azure.storage.CloudStorageAccount;
      az.loadConfigurationSettings();
      az.connect();
      % create a container
-     container = azure.storage.blob.CloudBlobContainer(client,'mycontainer')
+     azClient = azure.storage.blob.CloudBlobClient(az)
+     container = azure.storage.blob.CloudBlobContainer(azClient,'mycontainer')
      container.createIfNotExists()
      % create a shared access policy
      myPolicy = azure.storage.blob.SharedAccessBlobPolicy();
-     permSet(1) = azure.storage.blob.SharedAccessBlobPermissions.ADD;
+     permSet(1) = azure.storage.blob.SharedAccessBlobPermissions.LIST;
      permSet(2) = azure.storage.blob.SharedAccessBlobPermissions.READ;
      myPolicy.setPermissions(permSet);
      t1 = datetime('now');
@@ -1201,7 +1245,7 @@
   containers.Map is returned.
  
   Example:
-   % Here we have an existing container with a number of blobs
+   % Given an existing container with a number of blobs
    azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
    % get a list of the blobs in the container
    l = azContainer.listBlobs();
@@ -1287,7 +1331,7 @@
      blob.upload();
  
   This file is now available on the WASB service. The upload mechanism is
-  vectorized. You can pass a full cell array of files to upload at once.
+  vectorized. A cell array of files to upload can be passed at once.
   For example, to upload a directory of files:
  
      % Get a list of files
@@ -1330,6 +1374,10 @@
   DELETE :  Specifies Delete access granted
   READ   :  Specifies Read access granted
   WRITE  :  Specifies Write access granted
+  LIST   :  Specifies List access granted
+            List is undocumented in the Java SDK version 8.0.0 and lower
+            However it appears fully implemented in line with other languages
+            and is required for use with CloudBlobContainers
  
 
 
@@ -1378,10 +1426,10 @@
   The output time is of type datetime, expiryTime will be returned with a
   UTC time zone.
  
-     % set the time to the current time and read it back
-     t1 = myPolicy.getSharedAccessStartTime();
+     % check the expiry time is greater than the current time
+     t1 = myPolicy.getSharedAccessExpiryTime();
      t2 = datetime('now', 'TimeZone', 'UTC')
-     if (t1 > t2)
+     if (t2 > t1)
          disp('Access period has expired');
      end
  
@@ -1523,7 +1571,7 @@
  
   This table handle can be used to transact with the cloud-based
   table API. The name of the table can only be set at creation
-  time. The name of a table must always be lowercase. If you include
+  time. The name of a table must always be lowercase. Including
   an upper-case letter in a container name, it would violate the Azure
   container naming rules, and cause 400 errors (Bad Request). This
   object will convert the given name to lowercase.
@@ -1834,7 +1882,7 @@
           dynamicEntity(bCount).initialize();
       end
  
-  You can compute the size of the payload using:
+  Compute the size of the payload using:
  
       dynamicEntity.getTotalSize();
  
@@ -1878,7 +1926,7 @@
 
 ### @SharedAccessTablePermissions/SharedAccessTablePermissions.m
 ```notalanguage
-  SHAREDACCESSTablePERMISSIONS defines the various supported permissions
+  SHAREDACCESSTABLEPERMISSIONS defines the various supported permissions
  
   Enumeration values are as follows:
  
@@ -2498,10 +2546,11 @@
   For further information see:
   https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model
  
-  A char array will be stored in concatenated form and returend as a
+  A char array will be stored in concatenated form and returned as a
   char vector.
   string arrays are not supported by the Azure Table API.
   datetime values must be scalar and not empty.
+  Vectors are only supported for chars and uint8.
 
 
 
@@ -2600,4 +2649,4 @@
 
 ------------    
 
-[//]: # (Copyright 2018 The MathWorks, Inc.)
+[//]: # (Copyright 2019 The MathWorks, Inc.)

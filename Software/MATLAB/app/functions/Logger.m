@@ -143,6 +143,34 @@ classdef Logger < handle
             obj = SingletonLogger;
 
         end
+
+        function log(varargin)
+            logObj = Logger.getLogger();
+            write(logObj, varargin{:});
+        end
+
+        function warning(varargin)
+            Logger.log('warning', varargin{:});
+        end
+
+        function debug(varargin)
+            Logger.log('debug', varargin{:});
+        end
+
+        function verbose(varargin)
+            Logger.log('verbose', varargin{:});
+        end
+
+        function error(varargin)
+            % Expect an MException to be returned if so catch it and throw as the
+            % caller to keep logger entries out of the console output
+            try
+                Logger.log('error', varargin{:});
+            catch ME
+                throwAsCaller(ME);
+            end
+        end
+
     end %static methods
 
 
@@ -210,11 +238,13 @@ classdef Logger < handle
             % Syntax:
             %       logObj.write(Level,MessageText)
             %       write(logObj,Level,MessageText)
+            %       write(logObj,Level,MessageText,myException)
             %
             % Inputs:
             %       logObj - Logger object
             %       Level - Message level string ('debug','warning',etc)
             %       MessageText - Message text string
+            %       myException - A previously caught or created exception
             %
             % Outputs:
             %       none
@@ -231,14 +261,14 @@ classdef Logger < handle
             idxLevel = find(strcmp(Level,obj.ValidLevels),1);
 
             if length(varargin) == 1
-                if isstruct(varargin{1})
-                    NMErrorStruct = varargin{1};
+                if isa(varargin{1}, 'MException')
+                    loggedException = varargin{1};
                 else
-                    error('Invalid argument: Expected errorStruct');
+                    error('Invalid argument: Expected an MException');
                 end
             else
-                % if a errorStruct is not passed in create one
-                NMErrorStruct = struct('message','','identifier','');
+                % if an MException is not passed set it to empty
+                loggedException = [];
             end
 
             % Save the message to the log
@@ -247,12 +277,17 @@ classdef Logger < handle
                 'LevelIndex',idxLevel,...
                 'LevelName',Level,...
                 'Message',MessageText,...
-                'ErrorDetails',NMErrorStruct);
+                'ErrorDetails',loggedException);
             obj.Messages(end+1) = NewMessage;
 
-            % Process the messages
-            obj.processMessage(NewMessage);
-
+            % Process the messages if the message is an error then an exception
+            % will be thrown which will be thrown as caller from this method
+            % of the Logger method to avoid entries from the Logger itself
+            try
+                obj.processMessage(NewMessage);
+            catch ME
+                throwAsCaller(ME);
+            end
         end
 
     end %public methods
@@ -266,52 +301,65 @@ classdef Logger < handle
     methods (Access = protected)
 
         function processMessage(obj,NewMessage)
-
-            % Should the message be displayed in the command window?
-            DispLevelIdx = find(strcmp(obj.DisplayLevel,obj.ValidLevels),1);
-            if NewMessage.LevelIndex>=DispLevelIdx
-                if strcmpi(NewMessage.LevelName, 'warning')
-                    tmpWarningStruct = warning;
-                    warning('off', 'backtrace');
-                    warning([obj.MsgPrefix, ' ', NewMessage.Message]);
-                    warning(tmpWarningStruct);
-                elseif strcmpi(NewMessage.LevelName, 'error')
-                    % don't use the errorStruct message field as there is
-                    % already a message field
-                    NewMessage.ErrorDetails.message = NewMessage.Message;
-                    % if the identifier field does NOT exist populate it with the logger prefix
-                    if ~isfield(NewMessage.ErrorDetails,'identifier')
-                        NewMessage.ErrorDetails.identifier = obj.MsgPrefix;
-                    end
-                    % if the identifier is empty set it to the prefix
-                    if isempty(NewMessage.ErrorDetails.identifier)
-                        NewMessage.ErrorDetails.identifier = obj.MsgPrefix;
-                    end
-                    % throw the error with the struture
-                    error(NewMessage.ErrorDetails);
-                else
-                    % not a warning or an error so just display it
-                    disp(NewMessage.Message);
-                end
-            end
-
+            % Called from write()
+            % Handle the file logging first as if an error throwing the error
+            % will halt execution and the file logging (if enabled) will not
+            % happen
             % Should the message be written to the log file?
             FileLevelIdx = find(strcmp(obj.LogFileLevel,obj.ValidLevels),1);
             if NewMessage.LevelIndex>=FileLevelIdx && ~isempty(obj.FileId)
                 % Create a comma delimited message, followed by a
                 % line terminator
                 fprintf(obj.FileId,'%s, %s, "%s"\r\n',...
-                    datestr(NewMessage.Timestamp),... %current date & time
-                    upper(NewMessage.LevelName),... %uppercase level string
-                    NewMessage.Message); %message as quoted string
+                datestr(NewMessage.Timestamp),... %current date & time
+                upper(NewMessage.LevelName),... %uppercase level string
+                NewMessage.Message); %message as quoted string
                 if strcmpi(NewMessage.LevelName,'error')
-                    fprintf('ID: %s, file: %s, name %s, line: %d\r\n',...
-                             NewMessage.ErrorDetails.identifier,...
-                             NewMessage.ErrorDetails.stack.file,...
-                             NewMessage.ErrorDetails.stack.name,...
-                             NewMessage.ErrorDetails.stack.line);
+                    if ~isempty(NewMessage.ErrorDetails)
+                        % If there an exception has been passed in log its message
+                        % and stack trace
+                        fprintf(obj.FileId,'ID: %s, message: "%s"\r\n',...
+                        NewMessage.ErrorDetails.identifier,...
+                        NewMessage.ErrorDetails.message);
+                        for n = 1:numel(NewMessage.ErrorDetails.stack)
+                            fprintf(obj.FileId,'ID: %s, file: %s, name: %s, line: %d\r\n',...
+                            NewMessage.ErrorDetails.identifier,...
+                            NewMessage.ErrorDetails.stack(n).file,...
+                            NewMessage.ErrorDetails.stack(n).name,...
+                            NewMessage.ErrorDetails.stack(n).line);
+                        end
+                    end
                 end
             end
+
+            % Should the message be displayed in the command window?
+            DispLevelIdx = find(strcmp(obj.DisplayLevel,obj.ValidLevels),1);
+            if NewMessage.LevelIndex>=DispLevelIdx
+                % If the level is 'warning' display it as a warning i.e. in red text
+                if strcmpi(NewMessage.LevelName, 'warning')
+                    % Temporarily save the warning state, disable backtraces to remove references
+                    % to the logger from output, issue the warning and restore the warning state
+                    tmpWarningStruct = warning;
+                    warning('off', 'backtrace');
+                    warning([obj.MsgPrefix, ' ', NewMessage.Message]);
+                    warning(tmpWarningStruct);
+                elseif strcmpi(NewMessage.LevelName, 'error')
+                    % If error level build and exception, make any existing
+                    % exception a Cause and throw the exception
+                    errException = MException(obj.MsgPrefix, NewMessage.Message);
+                    if ~isempty(NewMessage.ErrorDetails)
+                        errException = addCause(errException, NewMessage.ErrorDetails);
+                    end
+                    % Return errException to the top level of the Logger so it can be
+                    % thrown as caller again thus avoiding spurious entries from the
+                    % logger itself
+                    throwAsCaller(errException);
+                else
+                    % not a warning or an error so just display the message
+                    disp(NewMessage.Message);
+                end
+            end
+
 
         end %function processMessage
 

@@ -9,7 +9,7 @@ These documents are intended to provide a quick start in using the MATLAB® Inte
 4. [Network Configuration](NetworkConfiguration.md)
 5. [Use with MATLAB Production Server™ and MATLAB Compiler™](Deployed.md)
 6. [Use with MATLAB Distributed Computing Server™](Distributed.md)
-6. [Rebuilding the Interface](Rebuild.md)
+6. [Building the Interface](Rebuild.md)
 7. [Logging](Logging.md)
 8. [Notes](Notes.md)
 

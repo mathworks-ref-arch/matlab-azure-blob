@@ -13,7 +13,7 @@ classdef CloudTable < azure.object
     %
     % This table handle can be used to transact with the cloud-based
     % table API. The name of the table can only be set at creation
-    % time. The name of a table must always be lowercase. If you include
+    % time. The name of a table must always be lowercase. Including
     % an upper-case letter in a container name, it would violate the Azure
     % container naming rules, and cause 400 errors (Bad Request). This
     % object will convert the given name to lowercase.
@@ -49,7 +49,7 @@ classdef CloudTable < azure.object
                     sURI = varargin{1};
                     if isa(sURI,'azure.storage.StorageUri')
                         obj.Handle = com.microsoft.azure.storage.table.CloudTable(sURI.Handle);
-                        obj.Name = string(obj.Handle.getName());
+                        obj.Name = char(obj.Handle.getName());
                         obj.Parent = sURI;
                     else
                         write(logObj,'error','Invalid argument, expecting an azure.storage.StorageURI');
@@ -61,7 +61,7 @@ classdef CloudTable < azure.object
 
                     if client.isValid() && (ischar(tableName) || isstring(tableName))
                         tableName = lower(tableName);
-                        obj.Name = string(tableName);
+                        obj.Name = char(tableName);
                         obj.Parent = client;
                         obj.Handle = client.Handle.getTableReference(char(tableName));
                     else

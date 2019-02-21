@@ -6,14 +6,14 @@ A common error when first connecting is:
 The account being accessed does not support http
 ```
 This is most likely a result of the Azure™ configuration requiring secure transfer i.e. https.
-One can either disable the requirement by Azure, which may not be desirable or switch to using secure transfer:
+Either disable the requirement by Azure, which may not be desirable or switch to using secure transfer:
 
 ![Image of secure transfer setting](Images/SecureTransfer.png)
 
 Used with permission from Microsoft®.
 
 ```
->> az.DefaultEndpointsProtocol = 'https';
+az.DefaultEndpointsProtocol = 'https';
 ```
 
 ## Storage Explorer

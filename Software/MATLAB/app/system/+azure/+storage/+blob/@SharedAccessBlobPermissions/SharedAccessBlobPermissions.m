@@ -8,6 +8,10 @@ classdef SharedAccessBlobPermissions < azure.object
     % DELETE :  Specifies Delete access granted
     % READ   :  Specifies Read access granted
     % WRITE  :  Specifies Write access granted
+    % LIST   :  Specifies List access granted
+    %           List is undocumented in the Java SDK version 8.0.0 and lower
+    %           However it appears fully implemented in line with other languages
+    %           and is required for use with CloudBlobContainers
     %
 
     % Copyright 2018 The MathWorks, Inc.
@@ -18,6 +22,7 @@ classdef SharedAccessBlobPermissions < azure.object
         DELETE
         READ
         WRITE
+        LIST
     end
 
 end %class
