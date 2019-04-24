@@ -9,6 +9,8 @@
 * `Software\MATLAB\app\system\+azure\+storage\+blob\@BlobContainerPermissions`
 * `Software\MATLAB\app\system\+azure\+storage\+blob\@BlobContainerProperties`
 * `Software\MATLAB\app\system\+azure\+storage\+blob\@BlobProperties`
+* `Software\MATLAB\app\system\+azure\+storage\+blob\@BlobType`
+* `Software\MATLAB\app\system\+azure\+storage\+blob\@CloudAppendBlob`
 * `Software\MATLAB\app\system\+azure\+storage\+blob\@CloudBlobClient`
 * `Software\MATLAB\app\system\+azure\+storage\+blob\@CloudBlobContainer`
 * `Software\MATLAB\app\system\+azure\+storage\+blob\@CloudBlobDirectory`
@@ -34,8 +36,6 @@
 ### @object/object.m
 ```notalanguage
   OBJECT Root Class for all Azure wrapper objects
-
-
 
 ```
 
@@ -86,8 +86,6 @@
   connection.
  
 
-
-
 ```
 ### @CloudStorageAccount/connect.m
 ```notalanguage
@@ -96,11 +94,10 @@
   string and returning a handle used to create the client handle for
   service calls to Azure.
  
-    az = azure.storage.CloudStorageAccount;
-    az.loadConfigurationSettings();
-    az.connect();
-
-
+  Example:
+   az = azure.storage.CloudStorageAccount;
+   az.loadConfigurationSettings();
+   az.connect();
 
 ```
 ### @CloudStorageAccount/getCloudBlobClient.m
@@ -109,12 +106,11 @@
   Use this method to create a handle to the CloudBlobClient to interact
   with the Table API service.
  
-    az = azure.storage.CloudStorageAccount;
-    az.loadConfigurationSettings();
-    az.connect();
-    bc = az.getCloudBlobClient();
-
-
+  Example:
+   az = azure.storage.CloudStorageAccount;
+   az.loadConfigurationSettings();
+   az.connect();
+   bc = az.getCloudBlobClient();
 
 ```
 ### @CloudStorageAccount/getCloudTableClient.m
@@ -123,12 +119,11 @@
   Use this method to create a handle to the CloudTableClient to interact
   with the Table API service.
  
-    az = azure.storage.CloudStorageAccount;
-    az.loadConfigurationSettings();
-    az.connect();
-    tc = az.getCloudTableClient();
-
-
+  Example:
+   az = azure.storage.CloudStorageAccount;
+   az.loadConfigurationSettings();
+   az.connect();
+   tc = az.getCloudTableClient();
 
 ```
 ### @CloudStorageAccount/getStorageConnectionString.m
@@ -136,22 +131,20 @@
   GETSTORAGECONNECTIONSTRING Method to return the account connection string
   with the necessary credentials to connect to the Azure Storage.
 
-
-
 ```
 ### @CloudStorageAccount/isValid.m
 ```notalanguage
   ISVALID Method to check if a given object is properly initialized
   This method tests if the object has been created correctly.
  
-    az = azure.storage.CloudStorageAccount;
-    az.loadConfigurationSettings();
-    az.connect();
+ 
+  Example:
+   az = azure.storage.CloudStorageAccount;
+   az.loadConfigurationSettings();
+   az.connect();
  
   The validity of the object is checked using:
     [FLAG] = az.isValid();
-
-
 
 ```
 ### @CloudStorageAccount/loadConfigurationSettings.m
@@ -175,9 +168,6 @@
     az.AccountKey  = 'SV<MYSTORAGEACCOUNTKEY>Gw==';
     az.DefaultEndpointsProtocol = 'https';
     az.connect
- 
-
-
 
 ```
 
@@ -200,8 +190,6 @@
     oc = azure.storage.OperationContext();
  
 
-
-
 ```
 ### @OperationContext/setDefaultProxy.m
 ```notalanguage
@@ -220,8 +208,6 @@
     Set the default to a direct connection i.e. no proxy
         obj.setDefaultProxy('NO_PROXY');
  
-
-
 
 ```
 
@@ -248,8 +234,6 @@
   If passing URLs directly first convert them to matlab.net.URI type as shown.
  
 
-
-
 ```
 
 ------
@@ -272,8 +256,6 @@
  
   This object can then be used in the uploadPermissions() method.
 
-
-
 ```
 
 ------
@@ -284,8 +266,6 @@
 ### @BlobContainerProperties/BlobContainerProperties.m
 ```notalanguage
   BLOBCONTAINERPROPERTIES Represents the system properties for a container
-
-
 
 ```
 ### @BlobContainerProperties/getEtag.m
@@ -305,8 +285,6 @@
     ans =
     '0x8D63A86D9B4B6EB'
 
-
-
 ```
 
 ------
@@ -318,14 +296,280 @@
 ```notalanguage
   BLOBPROPERTIES Represents the system properties for a blob
 
+```
+### @BlobProperties/getBlobType.m
+```notalanguage
+  GETBLOBTYPE Gets the type of the blob content
+  Before using getBlobType() call downloadAttributes() and getProperties() for the
+  blob. The result is returned as an azure.storage.blob.BlobType object.
+ 
+  Example:
+   % Given an existing container with a number of blobs
+   azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
+   % get a list of the blobs in the container
+   myList = azContainer.listBlobs();
+   % populate the properties and metadata
+   myList{1}.downloadAttributes();
+   % get the Properties
+   props = myList{1}.getProperties();
+   type = props.getBlobType;
 
+```
+### @BlobProperties/getContentMD5.m
+```notalanguage
+  GETCONTENTMD5 Gets the MD5 of the blob content
+  Before using getContentMD5() call downloadAttributes() and getProperties() for the
+  blob. The result is returned as a character vector.
+ 
+  Example:
+   % Given an existing container with a number of blobs
+   azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
+   % get a list of the blobs in the container
+   myList = azContainer.listBlobs();
+   % populate the properties and metadata
+   myList{1}.downloadAttributes();
+   % get the Properties
+   props = myList{1}.getProperties();
+   props.getContentMD5
+   ans =
+       '70ac56fbb040f7b14026308d0722152f'
+
+```
+### @BlobProperties/getCreatedTime.m
+```notalanguage
+  GETCREATEDTIME Gets the creation time of the blob
+  Before using getCreatedTime() call downloadAttributes() and getProperties()
+  for the blob.
+  The output time is of type datetime and will be returned with a UTC time zone.
+ 
+  Example:
+   % Given an existing container with a number of blobs
+   azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
+   % get a list of the blobs in the container
+   myList = azContainer.listBlobs();
+   % populate the properties and metadata
+   myList{1}.downloadAttributes();
+   % get the Properties
+   props = myList{1}.getProperties();
+   props.getCreatedTime
+   ans =
+   datetime
+    01-Apr-2019 20:16:57
+
+```
+### @BlobProperties/getLastModified.m
+```notalanguage
+  GETLASTMODIFIED Gets the last modification time of the blob
+  Before using getLastModified() call downloadAttributes() and getProperties()
+  for the blob.
+  The output time is of type datetime and will be returned with a UTC timezone.
+ 
+  Example:
+   % Given an existing container with a number of blobs
+   azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
+   % get a list of the blobs in the container
+   myList = azContainer.listBlobs();
+   % populate the properties and metadata
+   myList{1}.downloadAttributes();
+   % get the Properties
+   props = myList{1}.getProperties();
+   props.getLastModified
+   ans  =
+   datetime
+    01-Apr-2019 20:06:59
 
 ```
 ### @BlobProperties/getLength.m
 ```notalanguage
   GETLENGTH Gets the size, in bytes, of the blob
-  Before using getLength() call downloadAttributes() and getProperties() for the
-  blob.
+  Before using getLength() call downloadAttributes() and getProperties()
+  for the blob.
+ 
+  Example:
+   % Given an existing container with a number of blobs
+   azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
+   % get a list of the blobs in the container
+   myList = azContainer.listBlobs();
+   % populate the properties and metadata
+   myList{1}.downloadAttributes();
+   % get the Properties
+   props = myList{1}.getProperties();
+   props.getLength
+   ans =
+       7566357
+
+```
+### @BlobProperties/setContentMD5.m
+```notalanguage
+  SETCONTENTMD5 Sets the content MD5 value for the blob
+
+```
+
+------
+
+
+## @BlobType
+
+### @BlobType/BlobType.m
+```notalanguage
+  BLOBTYPE defines the various supported permissions
+ 
+  Enumeration values are as follows:
+ 
+  APPEND_BLOB    Specifies the blob is an append blob.
+  BLOCK_BLOB     Specifies the blob is a block blob.
+  PAGE_BLOB      Specifies the blob is a page blob.
+  UNSPECIFIED    Specifies the blob type is not specified.
+
+```
+
+------
+
+
+## @CloudAppendBlob
+
+### @CloudAppendBlob/CloudAppendBlob.m
+```notalanguage
+  CLOUDAPPENDBLOB Class to represent an Azure CloudAppendBlob object
+  A AppendBlob can be created in several ways. In the first example a
+  container handle is provided along with the name of the BlobBlob
+  once uploaded. A CloudAppendBlob object does not
+  guarantee a file exists, for example a AppendBlob may be downloadable
+  rather than uploadable i.e. it exists in Azure but not locally.
+  In the second A local file path is provided that the file blob maps to.
+ 
+  Examples:
+  Create blob based on a blob name of SampleData.mat
+    blob = azure.storage.blob.CloudAppendBlob(azContainer, 'SampleData.mat');
+ 
+  A blob based on a local file:
+    blob = azure.storage.blob.CloudAppendBlob(azContainer, ...
+              'SampleData.mat', './my/local/path/SampleData.mat');
+ 
+  A blob can be uploaded with a name other than its filename as follows:
+    blob = azure.storage.blob.CloudAppendBlob(azContainer, ...
+              'mydir/mynewblobname.mat', which('SampleData.mat'));
+  Note virtual directory hierarchy in the uploaded blob can be introduced
+  by prepending it to the name. This method can be used to create
+  a virtual directory 'mydir' Azure will represent this as a
+  CloudBlobDirectory. Empty virtual directories are not supported.
+ 
+  A AppendBlob can also be created based on a Shared Access Signature for a
+  AppendBlob
+ 
+    blob = azure.storage.blob.CloudAppendBlob(mySAS_StorageUri);
+
+```
+### @CloudAppendBlob/appendFromFile.m
+```notalanguage
+  APPENDFROMFILE Appends a file to an append blob
+  This method should be used strictly in a single writer scenario because the
+  API internally uses the append-offset conditional header to avoid duplicate
+  blocks which does not work in a multiple writer scenario.
+
+```
+### @CloudAppendBlob/appendText.m
+```notalanguage
+  APPENDTEXT Appends a string to an append blob
+  The the platform's default encoding is used. This API should be used strictly
+  in a single writer scenario because the API internally uses the append-offset
+  conditional header to avoid duplicate blocks which does not work in a
+  multiple writer scenario.
+
+```
+### @CloudAppendBlob/deleteIfExists.m
+```notalanguage
+  DELETEIFEXISTS Delete a CloudAppendBlob or and array of CloudAppendBlobs
+  Use this method to delete one or more blobs from a container.
+ 
+    % delete a single blob from a cell array
+    blobs = azContainer.listBlobs();
+    blobs{1}.deleteIfExists();
+ 
+  If an array (NOT a cell array) of blobs is provided then the method will act
+  on each instance. An array of logical values results is returned corresponding
+  to the input blockblobs. True is returned if an appendblob is deleted otherwise
+  false is returned. If vectorized input is used and verbose logging is enabled
+  then a progress bar of '.' is displayed for each appendblob processed.
+ 
+   myBlobArray.deleteIfExists
+   .....
+ 
+   ans =
+ 
+     3x1 logical array
+ 
+      1
+      1
+      1
+
+```
+### @CloudAppendBlob/download.m
+```notalanguage
+  DOWNLOAD Method to download CloudAppendBlob(s)
+  Use this method to download a CloudAppendBlob or an array of CloudAppendBlobs if
+  a vector input is provided. If no argument is provided the current working
+  directory will be used as the download destination and the blob name will be
+  used as the filename. If a directory is provided then that directory will be
+  used as the destination directory. When specifying a destination directory but
+  not a destination file use a trailing delimiter. Again if a destination file
+  name is not provided the blob name will be used as the filename. If vectorized
+  blob inputs are provided avoid specifying a destination filename as all blobs
+  will be downloaded with the same filename and so all but the last blob will be
+  overwritten. A destination directory can be used in this scenario.
+ 
+  If a blob has a virtual directory hierarchy, this hierarchy will be removed on
+  download unless preserved by specifying the parameter 'useVirtualDirectory'
+  as true. In which case the blob's virtual hierarchy will be appended to a
+  destination directory, if specified, when creating the final download
+  destination. This is a change to functionality in releases prior to 0.6.0.
+ 
+  / & \ delimiters for virtual directories will be automatically altered to that
+  used on the destination system if required. Other delimiters though supported
+  by WASB will not be adjusted and in general are strongly discouraged. The
+  default delimiter '/' is strongly recommended.
+ 
+  Examples:
+    % download a list of CloudAppendBlobs to the current working directory using
+    % the blob names as filenames but removing any virtual directory hierarchy
+    blobList = azContainer.listBlobs();
+    for n=1:numel(blobList)
+      if isa(blobList{n}, azure.storage.blob.CloudAppendBlob)
+        blobList{n}.download()
+      end
+    end
+ 
+   % download a blob called SampleData.mat from the container azContainer to the
+   % current working directory
+   blob = azure.storage.blob.CloudAppendBlob(azContainer, 'SampleData.mat');
+   blob.download();
+ 
+   % download a blob called SampleData.mat from the container azContainer to the
+   % current working directory but retain the mydir1/mydir2 hierarchy
+   % Note, if setting useVirtualDirectory and not specifying a destination directory
+   % an empty directory, '', should be specified.
+   blob = azure.storage.blob.CloudAppendBlob(azContainer, 'mydir1/mydir2/SampleData.mat');
+   blob.download('','useVirtualDirectory',true);
+ 
+   % download a blob called SampleData.mat from the container azContainer to the
+   % directory /tmp/mydownloads/, do not retain virtual hierarchy but use the name
+   % SampleData.mat, note the trailing delimiter following mydownloads/
+   blob = azure.storage.blob.CloudAppendBlob(azContainer, 'mydir1/SampleData.mat');
+   blob.download('/tmp/mydownloads/');
+ 
+   % download a blob called myAzureName.txt from the container azContainer to the
+   % directory /mydownloads/ within the current working directory. The blob name
+   % is not used for the local download.
+   blob = azure.storage.blob.CloudAppendBlob(azContainer, 'myAzureName.txt');
+   blob.download(fullfile(pwd, '/mydownloads/myLocalName.txt'));
+
+```
+### @CloudAppendBlob/downloadAttributes.m
+```notalanguage
+  DOWNLOADATTRIBUTES Populates a blob's properties and metadata
+  This method populates the blob's system properties and user-defined metadata.
+  Before reading or modifying a blob's properties or metadata, call this method
+  retrieve the latest values for the blob's properties and metadata from Azure.
  
   Example:
    % Given an existing container with a number of blobs
@@ -334,13 +578,199 @@
    l = azContainer.listBlobs();
    % populate the properties and metadata
    l{1}.downloadAttributes();
-   % get the Properties
-   p = l{1}.getProperties();
-   p.getLength
+   % get the metadata
+   m = l{1}.getMetadata()
+   m =
+     Map with properties:
+           Count: 1
+         KeyType: char
+       ValueType: char
+   keys(m)
+   ans =
+     1x1 cell array
+        {'mykey1'}
+
+```
+### @CloudAppendBlob/exists.m
+```notalanguage
+  EXISTS Method returns true if a blob exists, otherwise false
+
+```
+### @CloudAppendBlob/generateSharedAccessSignature.m
+```notalanguage
+  GENERATESHAREDACCESSSIGNATURE Returns a shared access signature (SAS)
+  Returns a shared access signature for a blob. Note this does not contain the
+  leading "?". The SAS is returned as a character vector.
+  An optional group policy identifier can be specified if required.
+ 
+     % configure a client & connect to Azure
+     az = azure.storage.CloudStorageAccount;
+     az.UseDevelopmentStorage = false;
+     az.loadConfigurationSettings();
+     az.connect();
+ 
+     % create a container
+     azClient = azure.storage.blob.CloudBlobClient(az);
+     azContainer = azure.storage.blob.CloudBlobContainer(azClient,'comExampleMycontainername');
+     flag = azContainer.createIfNotExists();
+ 
+     % create a shared access policy
+     myPolicy = azure.storage.blob.SharedAccessBlobPolicy();
+     permSet(1) = azure.storage.blob.SharedAccessBlobPermissions.LIST;
+     permSet(2) = azure.storage.blob.SharedAccessBlobPermissions.READ;
+     myPolicy.setPermissions(permSet);
+ 
+     t1 = datetime('now','TimeZone','UTC') + hours(24);
+     myPolicy.setSharedAccessExpiryTime(t1);
+     t2 = datetime('now','TimeZone','UTC') - minutes(15);
+     myPolicy.setSharedAccessStartTime(t2);
+ 
+     % create a blob in the container
+     x = rand(10);
+     filename1 = 'SampleData1.mat';
+     save(filename1,'x');
+     uploadBlob = azure.storage.blob.CloudAppendBlob(azContainer, filename1, which(filename1'));
+     uploadBlob.upload();
+ 
+     % generate the signature as follows: blob URI + '?' + Signature string
+     % if there is no blob level policy in use then omit it
+     % sas = uploadBlob.generateSharedAccessSignature(myPolicy, 'myPolicyID');
+     sas = uploadBlob.generateSharedAccessSignature(myPolicy);
+     myUri = uploadBlob.getUri();
+     fullSas = [char(myUri.EncodedURI),'?',sas];
+ 
+     % get a blob object based on the SAS URL
+     downloadBlob = azure.storage.blob.CloudAppendBlob(azure.storage.StorageUri(matlab.net.URI(fullSas)));
+     % download it to using a different filename and load the random data
+     filename2 = 'SampleData2.mat';
+     downloadBlob.download(filename2);
+     downloadStruct = load(filename2);
+
+```
+### @CloudAppendBlob/getContainer.m
+```notalanguage
+  GETCONTAINER returns the container of a CloudAppendblob
+  The container is returned as a azure.storage.blob.CloudBlobContainer.
+ 
+  container = azure.storage.blob.CloudBlobContainer(myAppendBlob);
+
+```
+### @CloudAppendBlob/getMetadata.m
+```notalanguage
+  GETMETADATA Returns the metadata for the blob
+  Data is returned as containers.Map. If there is no metadata and empty
+  containers.Map is returned.
+ 
+  Example:
+   % Given an existing container with a number of blobs
+   azContainer = azure.storage.blob.CloudBlobContainer(azClient,'testcontainer');
+   % get a list of the blobs in the container
+   l = azContainer.listBlobs();
+   % populate the properties and metadata
+   l{1}.downloadAttributes();
+   % get the metadata
+   m = l{1}.getMetadata()
+   m =
+     Map with properties:
+           Count: 1
+         KeyType: char
+       ValueType: char
+   keys(m)
+   ans =
+     1x1 cell array
+        {'mykey1'}
+
+```
+### @CloudAppendBlob/getParent.m
+```notalanguage
+  GETPARENT returns the parent directory of a CloudAppendBlob
+  The parent is returned as a azure.storage.blob.CloudBlobDirectory.
+
+```
+### @CloudAppendBlob/getProperties.m
+```notalanguage
+  GETPROPERTIES Returns the properties for the blob
+
+```
+### @CloudAppendBlob/getUri.m
+```notalanguage
+  GETURI Returns the URI for a CloudAppendBlob
+  The URI is returned as a matlab.net.URI, this may be used when
+  constructing a shared access signature for example.
+ 
+     % get the URI for a blob
+     myblob.getUri
      ans =
-         7566357
+     URI with properties:
+ 
+                 Scheme: "https"
+               UserInfo: [0x0 string]
+                   Host: "myaccount.blob.core.windows.net"
+                   Port: []
+       EncodedAuthority: "myaccount.blob.core.windows.net"
+                   Path: [""    "mycontainer"    "SampleData.mat"]
+            EncodedPath: "/mycontainer/SampleData.mat"
+                  Query: [0x0 matlab.net.QueryParameter]
+           EncodedQuery: ""
+               Fragment: [0x0 string]
+               Absolute: 1
+             EncodedURI: "https://myaccount.blob.core.windows.net/mycontainer/SampleData.mat"
+ 
 
+```
+### @CloudAppendBlob/setMetadata.m
+```notalanguage
+  SETMETADATA Sets the metadata for the blob
+  Key Value pairs in char vector format can be passed as an individual pair or
+  as containers.Map containing multiple Key Value pairs.
 
+```
+### @CloudAppendBlob/upload.m
+```notalanguage
+  UPLOAD Method to upload CloudAppendBlob(s) to WASB
+  This method will upload the current CloudAppendBlob reference(s) to WASB. When
+  uploading the data to a container, first create a blob handle (merely a
+  reference) and then upload. The upload 'path/location' in Azure is set in
+  the Container not the CloudAppendBlob, which only sets the name.
+ 
+     blob = azContainer.getAppendBlobReference(which('SampleData.mat'));
+     blob.upload();
+ 
+  This file is now available on the WASB service. The upload mechanism is
+  vectorized. A cell array of files to upload can be passed at once.
+  For example, to upload a directory of files:
+ 
+     % Get a list of files
+     dirContents = dir('*.m');
+     filesToUpload = {dirContents.name};
+     blobs = azContainer.getAppendBlobReference(filesToUpload);
+     blobs.upload;
+     .................
+ 
+  Dots are displayed as feedback for vectorized uploads if verbose logging is
+  enabled.
+ 
+  Unlike the Java Azure SDK the MATLAB Blob object stores the path of the local
+  file for upload, this is set when the CloudAppendBlob is created. It is used at
+  upload for the source file but the destination name the object is uploaded to
+  is derived from the object Name value which is set when the MATLAB Blob object
+  is constructed. These Names need not match and indeed generally do not as the
+  local file object will contain path values that would not apply in WASB.
+  One may commonly rely on the Container to provide the structure into which a
+  Blob is uploaded using just it's file name as the Blob name, as set at Blob
+  creation time.
+
+```
+### @CloudAppendBlob/uploadMetadata.m
+```notalanguage
+  UPLOADMETADATA Uploads the blobs's metadata
+  See also: setMetadata()
+
+```
+### @CloudAppendBlob/uploadProperties.m
+```notalanguage
+  UPLOADPROPETIES Uploads the blobs's properties
+  See also: setProperties()
 
 ```
 
@@ -369,8 +799,6 @@
   A client object can be used to create containers and otherwise transact with
   WASB.
 
-
-
 ```
 ### @CloudBlobClient/getContainerReference.m
 ```notalanguage
@@ -398,8 +826,6 @@
       container = azure.storage.blob.CloudBlobContainer(client,'mycontainer');
       container.createIfNotExists;
 
-
-
 ```
 ### @CloudBlobClient/getDirectoryDelimiter.m
 ```notalanguage
@@ -408,8 +834,6 @@
   directories. The default is '/'. The value of the delimiter used by a client
   can be set using setDirectoryDelimiter. Using the default / is strongly
   recommended.
-
-
 
 ```
 ### @CloudBlobClient/isValid.m
@@ -426,8 +850,6 @@
  
   The validity of the object is checked using:
     flag = client.isValid();
-
-
 
 ```
 ### @CloudBlobClient/listContainers.m
@@ -447,8 +869,6 @@
       containers = client.listContainers();
       containerNames = {containers.Name};
 
-
-
 ```
 ### @CloudBlobClient/setDirectoryDelimiter.m
 ```notalanguage
@@ -463,8 +883,6 @@
       client = azure.storage.blob.CloudBlobClient(az);
       % Set delimiter to a \
       client.setDirectoryDelimiter('\');
-
-
 
 ```
 
@@ -525,8 +943,6 @@
   See also the client.getContainerReference() method which is the idiomatic
   way to construct a container.
 
-
-
 ```
 ### @CloudBlobContainer/createIfNotExists.m
 ```notalanguage
@@ -546,8 +962,6 @@
     container.createIfNotExists();
  
   This functions returns true if container was created otherwise false.
-
-
 
 ```
 ### @CloudBlobContainer/deleteIfExists.m
@@ -569,16 +983,12 @@
  
   This functions returns true if container was deleted otherwise false
 
-
-
 ```
 ### @CloudBlobContainer/downloadAttributes.m
 ```notalanguage
   DOWNLOADATTRIBUTES Downloads the container's attributes
   Attributes consist of metadata and properties.
  
-
-
 
 ```
 ### @CloudBlobContainer/downloadPermissions.m
@@ -590,8 +1000,6 @@
  
   Perms should now have one of the following AccessTypes:
     'OFF', 'BLOB' or 'CONTAINER'
-
-
 
 ```
 ### @CloudBlobContainer/exists.m
@@ -614,52 +1022,80 @@
       % Check if the container exists
       flag = container.exists();
 
-
-
 ```
 ### @CloudBlobContainer/generateSharedAccessSignature.m
 ```notalanguage
-  GENERATESHAREDACCESSSIGNATURE Returns a shared access signature (SAS) string
-  Returns a shared access signature for the blob using the specified group
-  policy identifier and operation context. Note this does not contain the
-  leading "?". A character vector is returned.
+  GENERATESHAREDACCESSSIGNATURE Returns a shared access signature (SAS)
+  Returns a shared access signature for the container. Note this does not
+  contain the leading "?". The SAS is returned as a character vector is
+  returned. An optional group policy identifier can be specified if required.
  
-  Example:
      % configure a client & connect to Azure
      az = azure.storage.CloudStorageAccount;
+     az.UseDevelopmentStorage = false;
      az.loadConfigurationSettings();
      az.connect();
+ 
      % create a container
-     azClient = azure.storage.blob.CloudBlobClient(az)
-     container = azure.storage.blob.CloudBlobContainer(azClient,'mycontainer')
-     container.createIfNotExists()
+     azClient = azure.storage.blob.CloudBlobClient(az);
+     azContainer = azure.storage.blob.CloudBlobContainer(azClient,'comexamplemycontainername');
+     flag = azContainer.createIfNotExists();
+ 
+     % create a blob in the container
+     x = rand(10);
+     filename1 = 'SampleData1.mat';
+     save(filename1,'x');
+     uploadBlob = azure.storage.blob.CloudBlockBlob(azContainer, filename1, which(filename1'));
+     uploadBlob.upload();
+ 
      % create a shared access policy
      myPolicy = azure.storage.blob.SharedAccessBlobPolicy();
      permSet(1) = azure.storage.blob.SharedAccessBlobPermissions.LIST;
      permSet(2) = azure.storage.blob.SharedAccessBlobPermissions.READ;
      myPolicy.setPermissions(permSet);
-     t1 = datetime('now');
-     t2 = t1 + hours(24);
-     myPolicy.setSharedAccessExpiryTime(t2);
-     t3 = t1 - minutes(15);
-     myPolicy.setSharedAccessStartTime(t3);
-     % generate the signature as follows
-     % blob URI + '?' + Signature string
-     % If there is no container level policy in use then this can be set to ''
-     sas = container.generateSharedAccessSignature(myPolicy,'myContainerLevelAccessPolicy')
-     sas =
-     'sig=eqqgphDjJv0uat3v%2B%2BlPqYUpJFA7ZaXe5eaIEvFIRX4%3D&st=2018-05-09T16%3A03%3A48Z&se=2018-05-10T16%3A18%3A48Z&sv=2017-04-17&si=myContainerLevelAccessPolicy&sp=rac&sr=b'
-     myUri = container.getUri;
-     fullSas = [char(myUri.EncodedURI),'?',sas];
  
-     % This SAS can now be used by 3rd parties without credentials based access
+     t1 = datetime('now','TimeZone','UTC') + hours(24);
+     myPolicy.setSharedAccessExpiryTime(t1);
+     t2 = datetime('now','TimeZone','UTC') - minutes(15);
+     myPolicy.setSharedAccessStartTime(t2);
+ 
+     % generate the signature as follows: blob URI + '?' + Signature string
+     % if there is no container level policy in use then omit it
+     % sas = container.generateSharedAccessSignature(myPolicy,'myContainerLevelAccessPolicy')
+     sas = azContainer.generateSharedAccessSignature(myPolicy);
+     myUri = azContainer.getUri;
+     fullSas = [char(myUri.EncodedURI),'?',sas];
      SASStorageUri = azure.storage.StorageUri(matlab.net.URI(fullSas));
      SASContainer = azure.storage.blob.CloudBlobContainer(SASStorageUri);
+ 
      blobList = SASContainer.listBlobs();
-     myBlob = myList{1};
-     myBlob.download();
+     downloadBlob = blobList{1};
+     % download it using a different filename and load the random data
+     filename2 = 'SampleData2.mat';
+     downloadBlob.download(filename2);
+     downloadStruct = load(filename2);
+ 
+     % cleanup
+     delete(filename1);
+     flag = azContainer.deleteIfExists();
+     azClient.delete();
 
-
+```
+### @CloudBlobContainer/getAppendBlobReference.m
+```notalanguage
+  GETBLOBREFERENCE Method to create reference(s) to WASB CloudAppendBlob(s)
+  This method will create CloudAppendBlob object(s). A local file name argument
+  corresponding to the file being reference must be provided as a full path. An
+  optional blob name may provided otherwise the file name will be used as the
+  blob name. The file name and the blob name can also be provided as cell arrays
+  allowing vectorized input.
+ 
+    % use which to expand a file name on the path
+    blob = container.getAppendBlobReference(which('MyData.mat'));
+    % provide a full path directly
+    blob = container.getAppendBlobReference('/my/local/path/filename.mat');
+    % provide a blob name
+    blob = container.getAppendBlobReference('/my/local/path/filename.mat', 'myalternatename.mat');
 
 ```
 ### @CloudBlobContainer/getBlockBlobReference.m
@@ -672,13 +1108,21 @@
   allowing vectorized input.
  
     % use which to expand a file name on the path
-     blob = container.getBlockBlobReference(which('MyData.mat'));
+    blob = container.getBlockBlobReference(which('MyData.mat'));
     % provide a full path directly
     blob = container.getBlockBlobReference('/my/local/path/filename.mat');
     % provide a blob name
     blob = container.getBlockBlobReference('/my/local/path/filename.mat', 'myalternatename.mat');
-
-
+ 
+  The input can be a cell array of character vectors but they need to be
+  fully qualified file names. In this case an array of CloudBlockBlobs will be
+  returned:
+ 
+    blobs = container.getBlockBlobReference(myFileCellArray);
+    % with blob names
+    blobs = container.getBlockBlobReference(myFileNameCellArray, myBlobNameCellArray);
+ 
+  The size and type of file and blob name arrays must match.
 
 ```
 ### @CloudBlobContainer/getDirectoryReference.m
@@ -689,8 +1133,6 @@
  
   Example:
      myCloubBlobDirectory = azContainer.getDirectoryReference('mydirname')
-
-
 
 ```
 ### @CloudBlobContainer/getMetadata.m
@@ -712,8 +1154,6 @@
       1x1 cell array
         {'key1'}
 
-
-
 ```
 ### @CloudBlobContainer/getProperties.m
 ```notalanguage
@@ -727,8 +1167,6 @@
     p.getEtag()
     ans =
     '0x8D63A86D9B4B6EB'
-
-
 
 ```
 ### @CloudBlobContainer/getServiceClient.m
@@ -746,23 +1184,17 @@
       % Derive a CloudBlobClient from a container object
       client2 = container.getServiceClient();
 
-
-
 ```
 ### @CloudBlobContainer/getStorageUri.m
 ```notalanguage
   GETSTORAGEURI returns the StorageUri for a container
   The URI is returned as a azure.storage.StorageUri object.
 
-
-
 ```
 ### @CloudBlobContainer/getUri.m
 ```notalanguage
   GETURI Returns the URI for this container
   The URI is returned as a matlab.net.URI object.
-
-
 
 ```
 ### @CloudBlobContainer/isValid.m
@@ -781,18 +1213,17 @@
   The validity of the object is checked using:
     flag = container.isValid();
 
-
-
 ```
 ### @CloudBlobContainer/listBlobs.m
 ```notalanguage
   LISTBLOBS Method to list the blobs in a container
   This method will list all the blobs in a container. The resulting cell array
-  of blobs are of type CloudBlockBlob and or CloudBlobDirectory. Other blob
-  types are not supported. An optional prefix can be provided for blob items for
-  the container whose names begin with the specified prefix.  This value must be
-  preceded either by the name of the container or by the absolute path to the
-  container. If no blobs are present an empty cell array will be returned.
+  of blobs are of type CloudBlockBlob, CloudAppendBlob and or CloudBlobDirectory.
+  Other blob types are not supported. An optional prefix can be provided for
+  blob items for the container whose names begin with the specified prefix.
+  This value must be preceded either by the name of the container or by the
+  absolute path to the container. If no blobs are present an empty cell array
+  will be returned.
  
   Example:
     Connect to an Azure Cloud Storage Account
@@ -806,8 +1237,6 @@
  
     % List the contents of the container
     blobs = container.listBlobs()
-
-
 
 ```
 ### @CloudBlobContainer/load.m
@@ -825,8 +1254,6 @@
         myVars = azContainer.load('myblobname.mat', 'x', 'y');
  
   Non .mat files are also supported as per the built-in load command support.
-
-
 
 ```
 ### @CloudBlobContainer/save.m
@@ -847,8 +1274,6 @@
         y = rand(10);
         x = rand(10);
         mycontainer.save('myblobname.mat', 'x', 'y');
-
-
 
 ```
 ### @CloudBlobContainer/setMetadata.m
@@ -880,15 +1305,11 @@
     azContainer.uploadMetadata();
     m = azContainer.getMetadata();
 
-
-
 ```
 ### @CloudBlobContainer/uploadMetadata.m
 ```notalanguage
   UPLOADMETADATA Uploads the container's metadata
   See also: setMetadata()
-
-
 
 ```
 ### @CloudBlobContainer/uploadPermissions.m
@@ -907,8 +1328,6 @@
  
     azContainer.uploadPermissions(perm);
 
-
-
 ```
 
 ------
@@ -921,7 +1340,7 @@
   CLOUDBLOBDIRECTORY Represents a virtual directory of blobs
   Directory of blobs are designated by a delimiter character. Containers,
   which are encapsulated as CloudBlobContainer objects, hold directories,
-  and directories hold block blobs and page blobs. Directories can also
+  and directories hold block, append and page blobs. Directories can also
   contain sub-directories. CloudBlobDirectory object are generally created as
   outputs of other function calls.
  
@@ -932,28 +1351,20 @@
  
     Where prefix is the directory name
 
-
-
 ```
 ### @CloudBlobDirectory/getContainer.m
 ```notalanguage
   GETCONTAINER returns the container object of a CloudBlobDirectory
-
-
 
 ```
 ### @CloudBlobDirectory/getParent.m
 ```notalanguage
   GETPARENT returns the parent CloudBlobDirectory of a CloudBlobDirectory
 
-
-
 ```
 ### @CloudBlobDirectory/getPrefix.m
 ```notalanguage
   GETPREFIX returns the prefix of the a CloudBlobDirectory
-
-
 
 ```
 ### @CloudBlobDirectory/isValid.m
@@ -973,16 +1384,14 @@
   The validity of the object is checked using:
     flag = myDir.isValid();
 
-
-
 ```
 ### @CloudBlobDirectory/listBlobs.m
 ```notalanguage
   LISTBLOBS Returns a list of blob items for the directory
   This method will list all the blobs for the directory. The resulting cell
-  array of blobs are of type CloudBlockBlob and CloudBlobDirectory and can
-  be used to manipulate the blobs or blob directories. Other blob types are not
-  supported.
+  array of blobs are of type CloudBlockBlob, CloudAppendBlob and
+  CloudBlobDirectory and can be used to manipulate the blobs or blob
+  directories. Other blob types are not supported.
  
     % Connect to an Azure Cloud Storage Account
     az = azure.storage.CloudStorageAccount;
@@ -1011,8 +1420,6 @@
     % with a name of 'mydirname/SampleData.mat'
     blobs = myCloudBlobDirectory.listBlobs();
 
-
-
 ```
 
 ------
@@ -1024,7 +1431,7 @@
 ```notalanguage
   CLOUDBLOCKBLOB Class to represent an Azure CloudBlockBlob object
   A BlockBlob can be created in several ways. In the first example a
-  container handle is provided along with the name of the BloblBlob
+  container handle is provided along with the name of the BlobBlob
   once uploaded. A CloudBlockBlob object does not
   guarantee a file exists, for example a BlockBlob may be downloadable
   rather than uploadable i.e. it exists in Azure but not locally.
@@ -1051,12 +1458,10 @@
  
     blob = azure.storage.blob.CloudBlockBlob(mySAS_StorageUri);
 
-
-
 ```
 ### @CloudBlockBlob/deleteIfExists.m
 ```notalanguage
-  DELETEIFEXISTS Method to delete a blockblob or collection of blockblobs
+  DELETEIFEXISTS Delete a CloudBlockblob or an array of CloudBlockblobs
   Use this method to delete one or more blobs from a container.
  
     % delete a single blob from a cell array
@@ -1080,12 +1485,11 @@
       1
       1
 
-
-
 ```
 ### @CloudBlockBlob/download.m
 ```notalanguage
-  DOWNLOAD Method to download CloudBlockBlob(s)
+ % DOWNLOAD Method to download CloudBlockBlob(s)
+ 
   Use this method to download a CloudBlockBlob or an array of CloudBlockBlobs if
   a vector input is provided. If no argument is provided the current working
   directory will be used as the download destination and the blob name will be
@@ -1108,7 +1512,7 @@
   by WASB will not be adjusted and in general are strongly discouraged. The
   default delimiter '/' is strongly recommended.
  
-  Examples:
+ % Examples:
     % download a list of CloudBlockBlobs to the current working directory using
     % the blob names as filenames but removing any virtual directory hierarchy
     blobList = azContainer.listBlobs();
@@ -1143,8 +1547,6 @@
    blob.download(fullfile(pwd, '/mydownloads/myLocalName.txt'));
  
 
-
-
 ```
 ### @CloudBlockBlob/downloadAttributes.m
 ```notalanguage
@@ -1172,60 +1574,61 @@
      1x1 cell array
         {'mykey1'}
 
-
-
 ```
 ### @CloudBlockBlob/exists.m
 ```notalanguage
   EXISTS Method returns true if a blob exists, otherwise false
- 
-    tf = myblob.exists();
- 
-
-
 
 ```
 ### @CloudBlockBlob/generateSharedAccessSignature.m
 ```notalanguage
-  GENERATESHAREDACCESSSIGNATURE Returns a shared access signature (SAS) string
-  Returns a shared access signature for the blob using the specified group
-  policy identifier and operation context. Note this does not contain the
-  leading "?". A character vector is returned.
+  GENERATESHAREDACCESSSIGNATURE Returns a shared access signature (SAS)
+  Returns a shared access signature for a blob. Note this does not contain the
+  leading "?". The SAS is returned as a character vector.
+  An optional group policy identifier can be specified if required.
  
-  Example:
      % configure a client & connect to Azure
      az = azure.storage.CloudStorageAccount;
+     az.UseDevelopmentStorage = false;
      az.loadConfigurationSettings();
      az.connect();
+ 
      % create a container
-     azClient = azure.storage.blob.CloudBlobClient(az)
-     container = azure.storage.blob.CloudBlobContainer(azClient,'mycontainer')
-     container.createIfNotExists()
+     azClient = azure.storage.blob.CloudBlobClient(az);
+     azContainer = azure.storage.blob.CloudBlobContainer(azClient,'comExampleMycontainername');
+     flag = azContainer.createIfNotExists();
+ 
      % create a shared access policy
      myPolicy = azure.storage.blob.SharedAccessBlobPolicy();
      permSet(1) = azure.storage.blob.SharedAccessBlobPermissions.LIST;
      permSet(2) = azure.storage.blob.SharedAccessBlobPermissions.READ;
      myPolicy.setPermissions(permSet);
-     t1 = datetime('now');
-     t2 = t1 + hours(24);
-     myPolicy.setSharedAccessExpiryTime(t2);
-     t3 = t1 - minutes(15);
-     myPolicy.setSharedAccessStartTime(t3);
+ 
+     t1 = datetime('now','TimeZone','UTC') + hours(24);
+     myPolicy.setSharedAccessExpiryTime(t1);
+     t2 = datetime('now','TimeZone','UTC') - minutes(15);
+     myPolicy.setSharedAccessStartTime(t2);
+ 
      % create a blob in the container
      x = rand(10);
-     save('SampleData.mat','x');
-     myblob = azure.storage.blob.CloudBlockBlob(mycontainer, which('SampleData.mat'));
-     myblob.upload
-     % generate the signature as follows
-     % blob URI + '?' + Signature string
-     sas = myblob.generateSharedAccessSignature(myPolicy,'myContainerLevelAccessPolicy')
-     sas =
-     'sig=eqqgphDjJv0uat3v%2B%2BlPqYUpJFA7ZaXe5eaIEvFIRX4%3D&st=2018-05-09T16%3A03%3A48Z&se=2018-05-10T16%3A18%3A48Z&sv=2017-04-17&si=myContainerLevelAccessPolicy&sp=rac&sr=b'
-     myUri = myblob.getUri;
+     filename1 = 'SampleData1.mat';
+     save(filename1,'x');
+     uploadBlob = azure.storage.blob.CloudBlockBlob(azContainer, filename1, which(filename1'));
+     uploadBlob.upload();
+ 
+     % generate the signature as follows: blob URI + '?' + Signature string
+     % if there is no blob level policy in use then omit it
+     % sas = uploadBlob.generateSharedAccessSignature(myPolicy, 'myPolicyID');
+     sas = uploadBlob.generateSharedAccessSignature(myPolicy);
+     myUri = uploadBlob.getUri();
      fullSas = [char(myUri.EncodedURI),'?',sas];
  
-
-
+     % get a blob object based on the SAS URL
+     downloadBlob = azure.storage.blob.CloudBlockBlob(azure.storage.StorageUri(matlab.net.URI(fullSas)));
+     % download it to using a different filename and load the random data
+     filename2 = 'SampleData2.mat';
+     downloadBlob.download(filename2);
+     downloadStruct = load(filename2);
 
 ```
 ### @CloudBlockBlob/getContainer.m
@@ -1234,8 +1637,6 @@
   The container is returned as a azure.storage.blob.CloudBlobContainer.
  
   container = azure.storage.blob.CloudBlobContainer(myBlockBlob);
-
-
 
 ```
 ### @CloudBlockBlob/getMetadata.m
@@ -1263,23 +1664,16 @@
      1x1 cell array
         {'mykey1'}
 
-
-
 ```
 ### @CloudBlockBlob/getParent.m
 ```notalanguage
   GETPARENT returns the parent directory of a CloudBlockBlob
   The parent is returned as a azure.storage.blob.CloudBlobDirectory.
 
-
-
 ```
 ### @CloudBlockBlob/getProperties.m
 ```notalanguage
   GETPROPERTIES Returns the properties for the blob
- 
-
-
 
 ```
 ### @CloudBlockBlob/getUri.m
@@ -1307,16 +1701,12 @@
              EncodedURI: "https://myaccount.blob.core.windows.net/mycontainer/SampleData.mat"
  
 
-
-
 ```
 ### @CloudBlockBlob/setMetadata.m
 ```notalanguage
   SETMETADATA Sets the metadata for the blob
   Key Value pairs in char vector format can be passed as an individual pair or
   as containers.Map containing multiple Key Value pairs.
-
-
 
 ```
 ### @CloudBlockBlob/upload.m
@@ -1354,7 +1744,17 @@
   Blob is uploaded using just it's file name as the Blob name, as set at Blob
   creation time.
 
+```
+### @CloudBlockBlob/uploadMetadata.m
+```notalanguage
+  UPLOADMETADATA Uploads the blobs's metadata
+  See also: setMetadata()
 
+```
+### @CloudBlockBlob/uploadProperties.m
+```notalanguage
+  UPLOADPROPETIES Uploads the blobs's properties
+  See also: setProperties()
 
 ```
 
@@ -1380,8 +1780,6 @@
             and is required for use with CloudBlobContainers
  
 
-
-
 ```
 
 ------
@@ -1396,8 +1794,6 @@
   time, and permissions for a shared access signature.
  
     myPolicy = azure.storage.blob.SharedAccessBlobPolicy;
-
-
 
 ```
 ### @SharedAccessBlobPolicy/getPermissions.m
@@ -1417,8 +1813,6 @@
         READ    ADD
  
 
-
-
 ```
 ### @SharedAccessBlobPolicy/getSharedAccessExpiryTime.m
 ```notalanguage
@@ -1433,8 +1827,6 @@
          disp('Access period has expired');
      end
  
-
-
 
 ```
 ### @SharedAccessBlobPolicy/getSharedAccessStartTime.m
@@ -1451,8 +1843,6 @@
      end
  
 
-
-
 ```
 ### @SharedAccessBlobPolicy/permissionsToString.m
 ```notalanguage
@@ -1467,8 +1857,6 @@
     str =
         'rac'
  
-
-
 
 ```
 ### @SharedAccessBlobPolicy/setPermissions.m
@@ -1487,8 +1875,6 @@
     % set permissions on the policy
     myPolicy.setPermissions(permSet);
  
-
-
 
 ```
 ### @SharedAccessBlobPolicy/setPermissionsFromString.m
@@ -1510,43 +1896,37 @@
     myPolicy.setPermissionsFromString('ra');
  
 
-
-
 ```
 ### @SharedAccessBlobPolicy/setSharedAccessExpiryTime.m
 ```notalanguage
   SETSHAREDACCESSEXPIRYTIME Sets expiry time for shared access signatures
-  The input time should be of type datetime
+  The input time should be of type datetime and should be in the UTC time zone.
  
      % create a policy and apply an expiry time to it, in this case 24
      % hours from now
      myPolicy = azure.storage.blob.SharedAccessBlobPolicy();
-     t = datetime('now');
+     t = datetime('now','TimeZone','UTC');
      t = t + hours(24);
      myPolicy.setSharedAccessExpiryTime(t)
  
-
-
 
 ```
 ### @SharedAccessBlobPolicy/setSharedAccessStartTime.m
 ```notalanguage
   SETSHAREDACCESSSTARTTIME Sets start time for shared access signatures
-  The input time should be of type datetime.
+  The input time should be of type datetime and should be in the UTC time zone.
  
      % create a policy and set the time to the current time
      myPolicy = azure.storage.blob.SharedAccessBlobPolicy();
-     t = datetime('now');
+     t = datetime('now','TimeZone','UTC');
      myPolicy.setSharedAccessStartTime(t)
  
   Microsoft recommend that if setting the start time to the current time
   that this time be set 15 minutes early to allow clock variations
  
-     t = datetime('now');
+     t = datetime('now','TimeZone','UTC');
      t = t - minutes(15);
      myPolicy.setSharedAccessStartTime(t)
-
-
 
 ```
 
@@ -1585,8 +1965,6 @@
        tableHandle = azure.storage.table.CloudTable(SASStorageURI);
  
 
-
-
 ```
 ### @CloudTable/createIfNotExists.m
 ```notalanguage
@@ -1606,8 +1984,6 @@
     tableHandle.createIfNotExists();
  
   This functions returns true if table was created otherwise false
-
-
 
 ```
 ### @CloudTable/deleteIfExists.m
@@ -1629,15 +2005,11 @@
  
   This functions returns true if table was deleted otherwise false
 
-
-
 ```
 ### @CloudTable/execute.m
 ```notalanguage
   EXECUTE Method to execute a table operation on the Azure Table service
   Method to execute queries and operations on the Azure Table.
-
-
 
 ```
 ### @CloudTable/exists.m
@@ -1660,15 +2032,13 @@
       % Check if the container exists
       flag = container.exists();
 
-
-
 ```
 ### @CloudTable/generateSharedAccessSignature.m
 ```notalanguage
-  GENERATESHAREDACCESSSIGNATURE Returns a policy string
-  Returns a shared access signature for the table using the specified group
-  policy identifier and operation context. Note this does not contain the
-  leading "?".
+  GENERATESHAREDACCESSSIGNATURE Returns a shared access signature (SAS)
+  Returns a shared access signature for a blob. Note this does not contain the
+  leading "?". The SAS is returned as a character vector.
+  An optional group policy identifier can be specified if required.
  
     % First create a shared access policy, setting permissions and times
     myPolicy = azure.storage.table.SharedAccessTablePolicy();
@@ -1676,47 +2046,54 @@
     myPolicy.setPermissions(permSet);
  
     % Allow access for the next 24 hours
-    t1 = datetime('now');
-    t2 = t1 + hours(24);
-    myPolicy.setSharedAccessExpiryTime(t2);
- 
     % Allow a margin of 15 minutes for clock variances
-    t3 = t1 - minutes(15);
-    myPolicy.setSharedAccessStartTime(t3);
+    t1 = datetime('now','TimeZone','UTC') + hours(24);
+    myPolicy.setSharedAccessExpiryTime(t1);
+    t2 = datetime('now','TimeZone','UTC') - minutes(15);
+    myPolicy.setSharedAccessStartTime(t2);
  
     % Set row and partition restrictions
-    accessPolicyIdentifier = 'myAccessPolicyIdentifier';
-    startPartitionKey = 'Smith';
-    startRowKey = 'John';
-    endPartitionKey = 'Smith';
-    endRowKey = 'John';
+    pk = 'Smith';
+    rk = 'John';
+    accessPolicyIdentifier = '';
+    startPartitionKey = pk;
+    startRowKey = rk;
+    endPartitionKey = pk;
+    endRowKey = rk;
  
     % Generate the SAS, note the leading ? and URI are not included
     sas = tableHandle.generateSharedAccessSignature(myPolicy,accessPolicyIdentifier,startPartitionKey,startRowKey,endPartitionKey,endRowKey)
  
     sas =
  
-       'sig=2wOZrXmqMQgJ6KPJXwCVK3D9hxpcY166eMJ8mxDBZdc%3D&st=2018-05-10T08%3A38%3A43Z&epk=Smith&se=2018-05-11T08%3A53%3A43Z&sv=2017-04-17&si=myAccessPolicyIdentifier&tn=sampletable&sp=r&srk=John&spk=Smith&erk=John'
+       'sig=2wOZrXmqMQgJ6KPJXwCVK3D9hxpcY166eMJ8mxDBZdc%3D&st=2018-05-10T08%3A38%3A43Z&epk=Smith&se=2018-05-11T08%3A53%3A43Z&sv=2017-04-17&tn=sampletable&sp=r&srk=John&spk=Smith&erk=John'
  
-    % build the full SAS
+    % Build the full SAS
     myUri = tableHandle.getUri;
+    fullSas = [char(myUri.EncodedURI),'?',sas];
  
-    fullSas = [char(myUri.EncodedURI),'?',sas]
+    % Create a StorageURI object based on this
+    SASTableURI = matlab.net.URI(fullSas);
+    SASStorageURI = azure.storage.StorageUri(SASTableURI);
  
-    fullSas =
+    % Create a CloudTable object via the StorageURI object
+    sasTableHandle = azure.storage.table.CloudTable(SASStorageURI);
  
-     'https://myaccount.table.core.windows.net/sampletable?sig=2wOZrXmqMQgJ6KPJXwCVK3D9hxpcY166eMJ8mxDBZdc%3D&st=2018-05-10T08%3A38%3A43Z&epk=Smith&se=2018-05-11T08%3A53%3A43Z&sv=2017-04-17&si=accessPolicyIdentifier&tn=sampletable&sp=r&srk=John&spk=Smith&erk=John'
+    % Return the name of the table using the SAS table handle
+    nameValue = sasTableHandle.Name;
+    testCase.verifyTrue(strcmp(nameValue, tableHandle.Name));
  
-
-
+    % Build a Table Operation
+    dResolver = com.mathworks.azure.sdk.DynamicResolver.getDynamicResolver();
+    tableOperation = azure.storage.table.TableOperation.retrieve(pk, rk, dResolver);
+    % Query the table using the handle and operation to return the Name and Value
+    results = sasTableHandle.execute(tableOperation);
 
 ```
 ### @CloudTable/getStorageUri.m
 ```notalanguage
   GETSTORAGEURI Returns the list of URIs for all locations
  
-
-
 
 ```
 ### @CloudTable/getUri.m
@@ -1744,8 +2121,6 @@
              EncodedURI: "https://myaccount.table.core.windows.net/mysampletable"
  
 
-
-
 ```
 ### @CloudTable/isValid.m
 ```notalanguage
@@ -1761,8 +2136,6 @@
  
   The validity of the object is checked using:
     [FLAG] = client.isValid();
-
-
 
 ```
 
@@ -1783,8 +2156,6 @@
       % Create a client Object
       client = azure.storage.table.CloudTableClient(az);
  
-
-
 
 ```
 ### @CloudTableClient/getTableReference.m
@@ -1807,8 +2178,6 @@
   The table name needs to be a fully qualified string that conforms to the
   Azure naming conventions.
 
-
-
 ```
 ### @CloudTableClient/isValid.m
 ```notalanguage
@@ -1823,8 +2192,6 @@
  
   The validity of the object is checked using:
     [FLAG] = client.isValid();
-
-
 
 ```
 ### @CloudTableClient/listTables.m
@@ -1844,8 +2211,6 @@
       azTables = client.listTables();
       tableNames = {azTables.Name};
 
-
-
 ```
 
 ------
@@ -1861,8 +2226,6 @@
  
   For details of mapping of MATLAB datatype to Table Properties see
   the TableResult class documentation.
-
-
 
 ```
 ### @DynamicTableEntity/getTotalEntitySize.m
@@ -1887,16 +2250,18 @@
       dynamicEntity.getTotalSize();
  
 
-
-
 ```
 ### @DynamicTableEntity/table.m
 ```notalanguage
   TABLE Method to cast a Dynamic Table Entity into a MATLAB table
   Converts the result into a table with the appropriate types. This method
   removes the handle from the DynamicTableEntity.
-
-
+  The ordering of columns is not guaranteed relative to how they might be
+  presented in Azure interfaces, e.g. Storage explorer
+  All datetime entries must be in the UTC time zone.
+  Where a row does not have a value for a given column i.e. a null an empty
+  logical will be returned.
+  A partitionKey, rowKey and timestamp column will be included
 
 ```
 
@@ -1914,8 +2279,6 @@
   Example:
     queryCondition = azure.storage.table.QueryComparison;
  
-
-
 
 ```
 
@@ -1937,8 +2300,6 @@
   UPDATE :  Permission to modify entities granted
  
 
-
-
 ```
 
 ------
@@ -1954,8 +2315,6 @@
  
     myPolicy = azure.storage.table.SharedAccessTablePolicy;
  
-
-
 
 ```
 ### @SharedAccessTablePolicy/getPermissions.m
@@ -1975,8 +2334,6 @@
         QUERY    ADD
  
 
-
-
 ```
 ### @SharedAccessTablePolicy/getSharedAccessExpiryTime.m
 ```notalanguage
@@ -1991,8 +2348,6 @@
          disp('Access period has expired');
      end
 
-
-
 ```
 ### @SharedAccessTablePolicy/getSharedAccessStartTime.m
 ```notalanguage
@@ -2006,8 +2361,6 @@
      if (t2 > t1)
         disp('Access period has started');
      end
-
-
 
 ```
 ### @SharedAccessTablePolicy/permissionsToString.m
@@ -2024,8 +2377,6 @@
         'rad'
  
 
-
-
 ```
 ### @SharedAccessTablePolicy/setPermissions.m
 ```notalanguage
@@ -2033,8 +2384,6 @@
   This policy is used for a Shared Access Signature. permSet
   should be an array of azure.storage.table.SharedAccessTablePermissions
   enumerations.
-
-
 
 ```
 ### @SharedAccessTablePolicy/setPermissionsFromString.m
@@ -2054,43 +2403,37 @@
     myPolicy.setPermissionsFromString('ra');
  
 
-
-
 ```
 ### @SharedAccessTablePolicy/setSharedAccessExpiryTime.m
 ```notalanguage
   SETSHAREDACCESSEXPIRYTIME Sets expiry time for shared access signatures
-  The input time should be of type datetime.
+  The input time should be of type datetime and should be in the UTC time zone.
  
      % create a policy and apply an expiry time to it, in this case 24
      % hours from now
      myPolicy = azure.storage.table.SharedAccessTablePolicy();
-     t = datetime('now');
+     t = datetime('now','TimeZone','UTC');
      t = t + hours(24);
      myPolicy.setSharedAccessExpiryTime(t)
  
-
-
 
 ```
 ### @SharedAccessTablePolicy/setSharedAccessStartTime.m
 ```notalanguage
   SETSHAREDACCESSSTARTTIME Sets start time for shared access signatures
-  The input time should be of type datetime.
+  The input time should be of type datetime and should be in the UTC time zone.
  
      % create a policy and set the time to the current time
      myPolicy = azure.storage.table.SharedAccessTablePolicy();
-     t = datetime('now');
+     t = datetime('now','TimeZone','UTC');
      myPolicy.setSharedAccessStartTime(t)
  
   Microsoft recommend that if setting the start time to the current time
   that this time be set 15 minutes early to allow clock variations
  
-     t = datetime('now');
+     t = datetime('now','TimeZone','UTC');
      t = t - minutes(15);
      myPolicy.setSharedAccessStartTime(t)
-
-
 
 ```
 
@@ -2111,8 +2454,6 @@
  
   If a TableOperation returns an entity result, it is stored in the
   corresponding TableResult returned by the execute method.
-
-
 
 ```
 ### @TableOperation/delete.m
@@ -2171,8 +2512,6 @@
   * All entities are subject to the limitations described in Understanding
     the Table Service Data Model as described at:
     https://msdn.microsoft.com/en-us/library/azure/dd179338.aspx
-
-
 
 ```
 ### @TableOperation/insert.m
@@ -2234,8 +2573,6 @@
     the Table Service Data Model as described at:
     https://msdn.microsoft.com/en-us/library/azure/dd179338.aspx
 
-
-
 ```
 ### @TableOperation/insertOrMerge.m
 ```notalanguage
@@ -2294,8 +2631,6 @@
   * All entities are subject to the limitations described in Understanding
     the Table Service Data Model as described at:
     https://msdn.microsoft.com/en-us/library/azure/dd179338.aspx
-
-
 
 ```
 ### @TableOperation/insertOrReplace.m
@@ -2356,8 +2691,6 @@
     the Table Service Data Model as described at:
     https://msdn.microsoft.com/en-us/library/azure/dd179338.aspx
 
-
-
 ```
 ### @TableOperation/merge.m
 ```notalanguage
@@ -2415,8 +2748,6 @@
   * All entities are subject to the limitations described in Understanding
     the Table Service Data Model as described at:
     https://msdn.microsoft.com/en-us/library/azure/dd179338.aspx
-
-
 
 ```
 ### @TableOperation/replace.m
@@ -2476,14 +2807,10 @@
     the Table Service Data Model as described at:
     https://msdn.microsoft.com/en-us/library/azure/dd179338.aspx
 
-
-
 ```
 ### @TableOperation/retrieve.m
 ```notalanguage
   RETRIEVE Method to retrieve a table entity
-
-
 
 ```
 
@@ -2496,14 +2823,10 @@
 ```notalanguage
   TABLEQUERY Represents a query against a given table
 
-
-
 ```
 ### @TableQuery/where.m
 ```notalanguage
   WHERE Method to define the filter expression for the table query
-
-
 
 ```
 
@@ -2535,6 +2858,8 @@
   type is returned. In the case of a datetime a NaT is returned.
   Null entities cannot be created using this interface however empty
   string and character values can be used.
+  Nulls can be returned in the case where a column is not populated in
+  all rows.
  
   The following Microsoft comment describes this further:
    "The Table service does not persist null values for properties. When
@@ -2552,7 +2877,11 @@
   datetime values must be scalar and not empty.
   Vectors are only supported for chars and uint8.
 
-
+```
+### @TableResult/table.m
+```notalanguage
+  TABLE Method to cast a TableResult into a MATLAB table
+  Returns an empty table for an empty TableResult
 
 ```
 
@@ -2634,9 +2963,9 @@
 
 
 ```
-### functions/azRoot.m
+### functions/azWASBRoot.m
 ```notalanguage
-  AZROOT Helper function to locate the Azure interface package.
+  AZWASBROOT Helper function to locate the Azure WASB interface
  
   Locate the installation of the Azure interface package to allow easier construction
   of absolute paths to the required dependencies.

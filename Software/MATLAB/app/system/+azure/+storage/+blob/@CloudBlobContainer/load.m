@@ -33,8 +33,21 @@ end
 % load from the resulting temp file with the built in load
 tmpName = [tempname, fileExt];
 
-% create a cloudBlockBlob reference to the given blobname and download it
-blob = azure.storage.blob.CloudBlockBlob(obj, blobname);
+% TODO find a cleaner way to do this and use azure.storage.blob.BlobType
+% create a reference to the given blobname and download it
+% determine if it is a CloudBlockBlob or a CloudAppendBlob first
+cloudBlobJ = obj.Handle.getBlobReferenceFromServer(blobname);
+propertiesJ = cloudBlobJ.getProperties();
+typeJ = propertiesJ.getBlobType();
+type = char(typeJ.toString());
+
+switch type
+case 'BLOCK_BLOB'
+    blob = azure.storage.blob.CloudBlockBlob(obj, blobname);
+case 'APPEND_BLOB'
+    blob = azure.storage.blob.CloudAppendBlob(obj, blobname);
+end
+
 blob.download(tmpName);
 
 % check what has been downloaded

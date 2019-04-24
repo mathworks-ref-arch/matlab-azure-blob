@@ -56,7 +56,7 @@ if ~isdeployed()
 
     % Setup Java dynamic path
     % Locate the Azure libraries
-    libDir = fullfile(azRoot,'lib','jar');
+    libDir = fullfile(azWASBRoot,'lib','jar');
     jarFiles = dir(fullfile(libDir,'azure-wasb-sdk-0.1.0.jar'));
 
     if isempty(jarFiles)

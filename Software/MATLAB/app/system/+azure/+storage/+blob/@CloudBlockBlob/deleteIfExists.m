@@ -1,5 +1,5 @@
 function results = deleteIfExists(obj, varargin)
-% DELETEIFEXISTS Method to delete a blockblob or collection of blockblobs
+% DELETEIFEXISTS Delete a CloudBlockblob or an array of CloudBlockblobs
 % Use this method to delete one or more blobs from a container.
 %
 %   % delete a single blob from a cell array

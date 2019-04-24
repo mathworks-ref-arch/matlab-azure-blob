@@ -21,7 +21,6 @@ classdef DynamicTableEntity < azure.object
         %% Initialize
         function initialize(obj, varargin)
             % Imports
-            import com.microsoft.azure.storage.table.*;
             import java.util.HashMap;
 
             % Read the properties of the object and create the java property
@@ -34,9 +33,8 @@ classdef DynamicTableEntity < azure.object
                 % see: https://azure.github.io/azure-sdk-for-java/com/microsoft/azure/storage/table/EntityProperty.html
                 % EntityProperty represents single typed property and overloads
                 % the constructor that sets the type and value based on the input
-                % The MATLAB Java marshalling presents the right value to the API
+                % The MATLAB Java marshaling presents the right value to the API
                 % in most cases
-                % A marshaling is used only type primitives are supported
                 % Creating a null EdmType Entity is not supported by the
                 % Java API
 
@@ -57,16 +55,16 @@ classdef DynamicTableEntity < azure.object
                 % test, convert to posix time from MATLAB time
                 if isa(obj.(oProps{pCount}),'datetime')
                     dateJ = java.util.Date(int64(posixtime(obj.(oProps{pCount}))*1000));
-                    hMap.put(oProps{pCount},EntityProperty(dateJ));
+                    hMap.put(oProps{pCount}, com.microsoft.azure.storage.table.EntityProperty(dateJ));
                 else
-                    % For all other conversions and marshalling pass to EntityProperty()
-                    hMap.put(oProps{pCount}, EntityProperty(obj.(oProps{pCount})));
+                    % For all other conversions and marshaling pass to EntityProperty()
+                    hMap.put(oProps{pCount}, com.microsoft.azure.storage.table.EntityProperty(obj.(oProps{pCount})));
                 end
 
             end
 
             % Create a handle to the Java entity
-            obj.Handle = DynamicTableEntity(obj.partitionKey, obj.rowKey, '*' , hMap);
+            obj.Handle = com.microsoft.azure.storage.table.DynamicTableEntity(obj.partitionKey, obj.rowKey, '*' , hMap);
 
         end
     end

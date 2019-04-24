@@ -1,7 +1,7 @@
 classdef CloudBlockBlob < azure.object
     % CLOUDBLOCKBLOB Class to represent an Azure CloudBlockBlob object
     % A BlockBlob can be created in several ways. In the first example a
-    % container handle is provided along with the name of the BloblBlob
+    % container handle is provided along with the name of the BlobBlob
     % once uploaded. A CloudBlockBlob object does not
     % guarantee a file exists, for example a BlockBlob may be downloadable
     % rather than uploadable i.e. it exists in Azure but not locally.

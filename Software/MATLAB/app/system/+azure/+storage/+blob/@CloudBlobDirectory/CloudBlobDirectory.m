@@ -2,7 +2,7 @@ classdef CloudBlobDirectory < azure.object
 % CLOUDBLOBDIRECTORY Represents a virtual directory of blobs
 % Directory of blobs are designated by a delimiter character. Containers,
 % which are encapsulated as CloudBlobContainer objects, hold directories,
-% and directories hold block blobs and page blobs. Directories can also
+% and directories hold block, append and page blobs. Directories can also
 % contain sub-directories. CloudBlobDirectory object are generally created as
 % outputs of other function calls.
 %
@@ -20,7 +20,7 @@ properties
     % This property is referred to as Name but CloudBlobDirectories do not have
     % names they have prefixes, here we use the prefix as a 'name' to allow the
     % convenience of doing myBlobList{n}.Name where a myBlobList entry may be a
-    % CloudBlobDirectory or @CloudBlockBlob which does have a name
+    % CloudBlobDirectory, @CloudAppendBlob or @CloudBlockBlob which does have a name
     % The prefix can be directly obtained by calling the getPrefix method.
     Name;
 end

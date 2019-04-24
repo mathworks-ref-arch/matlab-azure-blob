@@ -29,9 +29,9 @@ Table storage contains the following components:
 
 The Table service uses PartitionKey to intelligently distribute table entities across storage nodes. Entities that have the same PartitionKey are stored on the same node. RowKey is the unique ID of the entity within the partition it belongs to. These keys along with the table name and the Timestamp can be used to uniquely identify an entity in a table.
 
-This interface uses the Java SDK for accessing the Azure Table Storage service. For more details regarding accessing the data via Cosmos DB, please refer to the Cosmos DB PSP. All access to Azure Cosmos DB is done through a Table API account.
+This interface uses the Java SDK for accessing the Azure Table Storage service. For more details regarding accessing the data via Cosmos DB, please refer to the MATLAB Interface *for Azure Cosmos DB* package. All access to Azure Cosmos DB is done through a Table API account.
 
-For details about naming tables and properties, see [Understanding the Table Service Data Model](https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model).
+For details about naming tables and properties, see [Understanding the Table Service Data Model](https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model). There are some underlying technical differences between Blob Table support and Cosmos DB and these are discussed in the following document: [https://docs.microsoft.com/en-us/azure/cosmos-db/faq#where-is-table-api-not-identical-with-azure-table-storage-behavior](https://docs.microsoft.com/en-us/azure/cosmos-db/faq#where-is-table-api-not-identical-with-azure-table-storage-behavior).
 
 ## The MATLAB® Interface for Windows Azure Table Storage
 This package is used to enable the use of the Azure Table Storage service with MATLAB. In the Software/MATLAB directory run the *startup.m* to make the software available in the MATLAB environment.
@@ -383,17 +383,15 @@ permSet(1) = azure.storage.table.SharedAccessTablePermissions.QUERY;
 myPolicy.setPermissions(permSet);
 
 % Allow access for the next 24 hours
-t1 = datetime('now');
-t2 = t1 + hours(24);
-myPolicy.setSharedAccessExpiryTime(t2);
-
 % Allow a margin of 15 minutes for clock variances
-t3 = t1 - minutes(15);
-myPolicy.setSharedAccessStartTime(t3);
+t1 = datetime('now','TimeZone','UTC') + hours(24);
+myPolicy.setSharedAccessExpiryTime(t1);
+t2 = datetime('now','TimeZone','UTC') - minutes(15);
+myPolicy.setSharedAccessStartTime(t2);
 
 
 % Set row and partition restrictions
-accessPolicyIdentifier = 'myAccessPolicyIdentifier';
+accessPolicyIdentifier = '';
 startPartitionKey = 'Smith';
 startRowKey = 'John';
 endPartitionKey = 'Smith';
@@ -404,7 +402,7 @@ sas = tableHandle.generateSharedAccessSignature(myPolicy,accessPolicyIdentifier,
 
 sas =
 
-    'sig=2wOZrXmqMQgJ6KPJXwCVK3D9hxpcY166eMJ8mxDBZdc%3D&st=2018-05-10T08%3A38%3A43Z&epk=Smith&se=2018-05-11T08%3A53%3A43Z&sv=2017-04-17&si=myAccessPolicyIdentifier&tn=sampletable&sp=r&srk=John&spk=Smith&erk=John'
+    'sig=2wOZrXmqMQgJ6KPJXwCVK3D9hxpcY166eMJ8mxDBZdc%3D&st=2018-05-10T08%3A38%3A43Z&epk=Smith&se=2018-05-11T08%3A53%3A43Z&sv=2017-04-17&tn=sampletable&sp=r&srk=John&spk=Smith&erk=John'
 
 % build the full SAS
 myUri = tableHandle.getUri;
@@ -413,7 +411,14 @@ fullSas = [char(myUri.EncodedURI),'?',sas]
 
 fullSas =
 
-    'https://myaccountname.table.core.windows.net/sampletable?sig=2wOZrXmqMQgJ6KPJXwCVK3D9hxpcY166eMJ8mxDBZdc%3D&st=2018-05-10T08%3A38%3A43Z&epk=Smith&se=2018-05-11T08%3A53%3A43Z&sv=2017-04-17&si=accessPolicyIdentifier&tn=sampletable&sp=r&srk=John&spk=Smith&erk=John'
+    'https://myaccountname.table.core.windows.net/sampletable?sig=2wOZrXmqMQgJ6KPJXwCVK3D9hxpcY166eMJ8mxDBZdc%3D&st=2018-05-10T08%3A38%3A43Z&epk=Smith&se=2018-05-11T08%3A53%3A43Z&sv=2017-04-17&tn=sampletable&sp=r&srk=John&spk=Smith&erk=John'
+
+% Create a StorageURI object based on fullSas
+SASTableURI = matlab.net.URI(fullSas);
+SASStorageURI = azure.storage.StorageUri(SASTableURI);
+
+% Create a CloudTable object via the StorageURI object
+sasTableHandle = azure.storage.table.CloudTable(SASStorageURI);
 
 ```
 

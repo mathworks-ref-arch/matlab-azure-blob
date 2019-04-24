@@ -3,10 +3,11 @@ function tc = getCloudTableClient(obj, varargin)
 % Use this method to create a handle to the CloudTableClient to interact
 % with the Table API service.
 %
-%   az = azure.storage.CloudStorageAccount;
-%   az.loadConfigurationSettings();
-%   az.connect();
-%   tc = az.getCloudTableClient();
+% Example:
+%  az = azure.storage.CloudStorageAccount;
+%  az.loadConfigurationSettings();
+%  az.connect();
+%  tc = az.getCloudTableClient();
 
 % Copyright 2017 The MathWorks, Inc.
 

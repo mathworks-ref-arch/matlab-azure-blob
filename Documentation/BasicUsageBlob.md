@@ -25,6 +25,8 @@ Block blobs are ideal for storing text or binary files, such as documents and me
 
 Page blobs can be up to 1TB in size, and are more efficient for frequent read/write operations. Azure Virtual Machines use page blobs as OS and data disks. Page Blobs are not currently supported by this package.
 
+Append blobs are well suited for storing log files.
+
 A good introduction to WASB can be found here:    
 * [https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction)    
 
@@ -333,7 +335,7 @@ blob = azContainer.getBlockBlobReference('SampleData.mat', 'mydir1/mydir2/mynewf
 blob.upload();
 ```
 
-The key is the *getBlockBlobReference* call. This results in the file in question SampleData.mat being uploaded with an alternate name in this case but that is optional. In doing so it creates the levels mydir1 and mydir2. Note there is no leading '/' in the specified path. This path is relative to the container in question, azContainer in this case. This call support vectorised inputs. Azure WASB does not support a straightforward mechanism for the upload and download of complete directories. This must be accomplished by looping over the directory contents. Locking of objects during this process is not supported. Directory hierarchy can be specified as a prefix when listing container contents.
+The key is the *getBlockBlobReference* call. This results in the file in question SampleData.mat being uploaded with an alternate name in this case but that is optional. In doing so it creates the levels mydir1 and mydir2. Note there is no leading '/' in the specified path. This path is relative to the container in question, azContainer in this case. This call support vectorized inputs. Azure WASB does not support a straightforward mechanism for the upload and download of complete directories. This must be accomplished by looping over the directory contents. Locking of objects during this process is not supported. Directory hierarchy can be specified as a prefix when listing container contents.
 
 
 ### Generating a Shared Access Signature
@@ -365,12 +367,12 @@ permSet(1) = azure.storage.blob.SharedAccessBlobPermissions.LIST;
 permSet(2) = azure.storage.blob.SharedAccessBlobPermissions.READ;
 myPolicy.setPermissions(permSet);
 % allow access for the next 24 hours
-t1 = datetime('now');
-t2 = t1 + hours(24);
-myPolicy.setSharedAccessExpiryTime(t2);
+% note the UTC time zone should be used
+t1 = datetime('now', 'TimeZone', 'UTC') + hours(24);
+myPolicy.setSharedAccessExpiryTime(t1);
 % allow a margin of 15 minutes for clock variances
-t3 = t1 - minutes(15);
-myPolicy.setSharedAccessStartTime(t3);
+t2 = datetime('now', 'TimeZone', 'UTC') - minutes(15);
+myPolicy.setSharedAccessStartTime(t2);
 
 % create a blob in the container from some random data
 x = rand(10);
@@ -379,20 +381,20 @@ myblob = azContainer.getBlockBlobReference(which('SampleData.mat'));
 myblob.upload();
 
 % generate the signature as follows: blob URI + '?' + Signature string
-% ff there is no container level policy in use then this can be set to ''
+% A container level policy can be provided if required.
 
-sas = myblob.generateSharedAccessSignature(myPolicy,'myContainerLevelAccessPolicy')
+sas = myblob.generateSharedAccessSignature(myPolicy)
 
 sas =
 
-    'sig=eqqgphDjJv0uat3v%2B%2BlPqYUpJFA7ZaXe5eaIEvFIRX4%3D&st=2018-05-09T16%3A03%3A48Z&se=2018-05-10T16%3A18%3A48Z&sv=2017-04-17&si=myContainerLevelAccessPolicy&sp=rac&sr=b'   
+    'sig=eqqgphDjJv0uat3v%2B%2BlPqYUpJFA7ZaXe5eaIEvFIRX4%3D&st=2018-05-09T16%3A03%3A48Z&se=2018-05-10T16%3A18%3A48Z&sv=2017-04-17&sp=rac&sr=b'   
 
 myUri = myblob.getUri;
 fullSas = [char(myUri.EncodedURI),'?',sas]   
 
 fullSas =
 
-        'https://myaccountname.blob.core.windows.net/mycontainer/SampleData.mat?sig=eqqgphDjJv0uat3v%2B%2BlPqYUpJFA7ZaXe5eaIEvFIRX4%3D&st=2018-05-09T16%3A03%3A48Z&se=2018-05-10T16%3A18%3A48Z&sv=2017-04-17&si=myContainerLevelAccessPolicy&sp=rac&sr=b'
+        'https://myaccountname.blob.core.windows.net/mycontainer/SampleData.mat?sig=eqqgphDjJv0uat3v%2B%2BlPqYUpJFA7ZaXe5eaIEvFIRX4%3D&st=2018-05-09T16%3A03%3A48Z&se=2018-05-10T16%3A18%3A48Z&sv=2017-04-17&sp=rac&sr=b'
 
 ```
 

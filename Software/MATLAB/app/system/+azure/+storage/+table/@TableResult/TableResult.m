@@ -20,6 +20,8 @@ classdef TableResult < azure.object
     % type is returned. In the case of a datetime a NaT is returned.
     % Null entities cannot be created using this interface however empty
     % string and character values can be used.
+    % Nulls can be returned in the case where a column is not populated in
+    % all rows.
     %
     % The following Microsoft comment describes this further:
     %  "The Table service does not persist null values for properties. When
@@ -45,9 +47,9 @@ classdef TableResult < azure.object
     methods
         %% Constructor
         function obj = TableResult(varargin)
-            if nargin==1
+            if nargin == 1
                 % Store the handle to the java object
-                obj.Handle=varargin{1};
+                obj.Handle = varargin{1};
 
                 % Initialize the object
                 obj.initialize();
@@ -56,6 +58,8 @@ classdef TableResult < azure.object
 
         function initialize(obj,varargin)
 
+            logObj = Logger.getLogger();
+
             % Locate the names of the properties and add them
             jHandle = obj.Handle;
 
@@ -63,6 +67,10 @@ classdef TableResult < azure.object
                 case 'com.microsoft.azure.storage.table.DynamicTableEntity'
                     % TODO - this is just an echo of the inserted objects
                     % will handle this case later.
+                case 'com.microsoft.azure.storage.table.TableResult'
+                    % In this case the Handle has already been set to a 
+                    % com.microsoft.azure.storage.table.TableResult so we
+                    % can return
                 case 'java.util.HashMap'
                     % Result array from the HashMapResolver
                     keys = jHandle.keySet();
@@ -74,11 +82,10 @@ classdef TableResult < azure.object
                     while kIter.hasNext()
                         keyName = char(kIter.next());
                         obj.addprop(keyName);
-                        obj.(keyName)=azure.storage.table.TableResult.getTypedResult(vIter.next());
+                        obj.(keyName) = azure.storage.table.TableResult.getTypedResult(vIter.next());
                     end
                 otherwise
                     % Edge cases
-                    logObj = Logger.getLogger();
                     write(logObj,'error',['Unsupported type: ', class(jHandle)]);
             end
         end

@@ -1,5 +1,6 @@
 function download(obj, varargin)
-% DOWNLOAD Method to download CloudBlockBlob(s)
+%% DOWNLOAD Method to download CloudBlockBlob(s)
+%
 % Use this method to download a CloudBlockBlob or an array of CloudBlockBlobs if
 % a vector input is provided. If no argument is provided the current working
 % directory will be used as the download destination and the blob name will be
@@ -22,7 +23,7 @@ function download(obj, varargin)
 % by WASB will not be adjusted and in general are strongly discouraged. The
 % default delimiter '/' is strongly recommended.
 %
-% Examples:
+%% Examples:
 %   % download a list of CloudBlockBlobs to the current working directory using
 %   % the blob names as filenames but removing any virtual directory hierarchy
 %   blobList = azContainer.listBlobs();

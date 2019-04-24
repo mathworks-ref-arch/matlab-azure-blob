@@ -64,7 +64,8 @@ switch class(jResult)
 
         % Add timestamp
         tableResults.addprop('timestamp');
-        tableResults.timestamp = char(jResult.getTimestamp());
+        dateJ = jResult.getTimestamp();
+        tableResults.timestamp = datetime(dateJ.getTime()/1000,'convertfrom','posixtime','TimeZone','UTC');
 
         % Handle the rest of the results
         props = jResult.getProperties();

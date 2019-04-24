@@ -29,7 +29,7 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
     end
 
     methods (TestMethodTeardown)
-        function testTearDown(testCase)
+        function testTearDown(testCase) %#ok<MANU>
 
         end
     end
@@ -50,6 +50,7 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
         end
 
+
         function testCreateTableReferences(testCase)
             disp('Running testCreateTableReferences');
             % Create a handle to the Cloud Storage Account
@@ -62,15 +63,17 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
             % Create a client and table handle
             tClient = azure.storage.table.CloudTableClient(az);
             tbl = tClient.getTableReference('SampleTable');
-
             testCase.assertClass(tbl,'azure.storage.table.CloudTable');
             testCase.assertNotEmpty(tbl.Handle);
-
             tbls = tClient.getTableReference({'Table1','Table2'});
             testCase.assertEqual(numel(tbls),2);
             testCase.assertNotEmpty(tbls(1).Handle);
             testCase.assertNotEmpty(tbls(2).Handle);
+
+            % Cleanup
+            tClient.delete();
         end
+
 
         function testExistenceChecks(testCase)
             % Connect to an Azure Cloud Storage Account
@@ -82,10 +85,11 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Create a client Object
             client = azure.storage.table.CloudTableClient(az);
-            tableHandle = azure.storage.table.CloudTable(client,'MyTable');
+            tableHandle = azure.storage.table.CloudTable(client,'TestTable');
 
             % Create a table
             tableHandle.createIfNotExists();
+            pause(60);
 
             % Check if the table exists
             flag = tableHandle.exists();
@@ -94,7 +98,15 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
             % Delete the table
             flag = tableHandle.deleteIfExists();
             testCase.assertTrue(flag);
+            pause(60);
+
+            % Check if the table exists
+            flag = tableHandle.exists();
+            testCase.assertFalse(flag);
+
+            client.delete();
         end
+
 
         function testSingleInsertOrReplace(testCase)
             disp('Running testSingleInsertOrReplace');
@@ -111,6 +123,7 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Create a table
             tableHandle.createIfNotExists();
+            pause(60);
 
             % Check if the table exists
             flag = tableHandle.exists();
@@ -128,7 +141,12 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
             tableOperation = azure.storage.table.TableOperation.insertOrReplace(dynamicEntity);
             tableHandle.execute(tableOperation);
 
+            % Reuse table in next test
+            flag = tableHandle.deleteIfExists();
+            testCase.assertTrue(flag);
+            client.delete();
         end
+
 
         function testBatchInsertOrReplace(testCase)
             disp('Running testBatchInsertOrReplace');
@@ -145,6 +163,7 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Create a table
             tableHandle.createIfNotExists();
+            pause(60);
 
             % Check if the table exists
             flag = tableHandle.exists();
@@ -164,7 +183,13 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
             % Create a table operation to execute on the database
             tableOperation = azure.storage.table.TableOperation.insertOrReplace(dynamicEntity); % vectorized
             tableHandle.execute(tableOperation);
+
+            % Reuse table in next test
+            flag = tableHandle.deleteIfExists();
+            testCase.assertTrue(flag);
+            client.delete();
         end
+
 
         function testBatchInsertOrMerge(testCase)
             disp('Running testBatchInsertOrMerge');
@@ -181,6 +206,7 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Create a table
             tableHandle.createIfNotExists();
+            pause(60);
 
             % Check if the table exists
             flag = tableHandle.exists();
@@ -200,7 +226,12 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
             % Create a table operation to execute on the database
             tableOperation = azure.storage.table.TableOperation.insertOrMerge(dynamicEntity); % vectorized
             tableHandle.execute(tableOperation);
+
+            % Delete the table
+            flag = tableHandle.deleteIfExists();
+            testCase.assertTrue(flag);
         end
+
 
         function testBatchInsertWithAndWithoutEcho(testCase)
             disp('Running testBatchInsertWithAndWithoutEcho');
@@ -217,7 +248,9 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
             tableHandleNoEcho = azure.storage.table.CloudTable(client,'InsertTestNoEchoTable');
             % Create a table
             tableHandleEcho.createIfNotExists();
+            pause(60);
             tableHandleNoEcho.createIfNotExists();
+            pause(60);
 
             % Check if the table exists
             flag = tableHandleEcho.exists();
@@ -244,7 +277,14 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
             tableOperation = azure.storage.table.TableOperation.insert(dynamicEntity(6:10),false); % vectorized
             tableHandleNoEcho.execute(tableOperation);
 
+            % Delete the tables and client
+            flag = tableHandleEcho.deleteIfExists();
+            testCase.assertTrue(flag);
+            flag = tableHandleNoEcho.deleteIfExists();
+            testCase.assertTrue(flag);
+            client.delete();
         end
+
 
         function testBatchInsertAndDelete(testCase)
             disp('Running testBatchInsertAndDelete');
@@ -261,6 +301,7 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Create a table
             tableHandleEcho.createIfNotExists();
+            pause(60);
 
             % Check if the table exists
             flag = tableHandleEcho.exists();
@@ -286,7 +327,12 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
             tableOperation = azure.storage.table.TableOperation.delete(dynamicEntity); % vectorized
             tableHandleEcho.execute(tableOperation);
 
+            % Delete the table & client
+            flag = tableHandleEcho.deleteIfExists();
+            testCase.assertTrue(flag);
+            client.delete();
         end
+
 
         function testMerge(testCase)
             disp('Running testMerge');
@@ -299,10 +345,11 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Create a client Object
             client = azure.storage.table.CloudTableClient(az);
-            tableHandle = azure.storage.table.CloudTable(client,'testdelete');
+            tableHandle = azure.storage.table.CloudTable(client,'testmerge');
 
             % Create a table
             tableHandle.createIfNotExists();
+            pause(60);
 
             % Check if the table exists
             flag = tableHandle.exists();
@@ -339,7 +386,13 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
             tableOperation = azure.storage.table.TableOperation.merge(dynamicEntity); % vectorized
             tableHandle.execute(tableOperation);
 
+            % Delete the table & client
+            pause(60);
+            flag = tableHandle.deleteIfExists();
+            testCase.assertTrue(flag);
+            client.delete();
         end
+
 
         function testReplace(testCase)
             disp('Running testReplace');
@@ -356,6 +409,7 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Create a table
             tableHandle.createIfNotExists();
+            pause(60);
 
             % Check if the table exists
             flag = tableHandle.exists();
@@ -383,7 +437,7 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
                 replaceEntity(bCount) = dynamicEntity(bCount);
                 replaceEntity(bCount).addprop('Location');
                 replaceEntity(bCount).Location = ['RandomCity',num2str(bCount)];
-                % Dont change the rowkey or the partition key so that we
+                % Don't change the rowkey or the partition key so that we
                 % can replace this correctly
                 replaceEntity(bCount).initialize();
             end
@@ -393,6 +447,12 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
             tableHandle.execute(tableOperation);
 
             % TODO: Verify that the table has the right replaced entities
+
+            % Delete the table & client
+            pause(60);
+            flag = tableHandle.deleteIfExists();
+            testCase.assertTrue(flag);
+            client.delete();
         end
 
         function testBasicRetrieve(testCase)
@@ -401,6 +461,9 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Use the storage account
             az = azure.storage.CloudStorageAccount;
+            az.loadConfigurationSettings('cloudstorageaccount.json_cosmos');
+            az.ServiceName = 'table';
+            az.CosmosDB = true;
             az.connect();
 
             % To create a client
@@ -411,6 +474,7 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Insert some partitioned data
             tableHandle.createIfNotExists();
+            pause(60);
 
             % Check if the table exists
             flag = tableHandle.exists();
@@ -443,6 +507,11 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Assert the element that was fetched the one that was inserted
             testCase.assertEqual(results.Name, testSignature);
+
+            % Delete the table & client
+            flag = tableHandle.deleteIfExists();
+            testCase.assertTrue(flag);
+            client.delete();
         end
 
         %% Test to retrieve a particular partition defined by a partionkey
@@ -466,6 +535,7 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Insert some partitioned data
             tableHandle.createIfNotExists();
+            pause(60);
 
             % Check if the table exists
             flag = tableHandle.exists();
@@ -523,7 +593,8 @@ classdef testCloudTableClientCosmos < matlab.unittest.TestCase
 
             % Cleanup
             tableHandle.deleteIfExists();
-
+            testCase.assertTrue(flag);
+            client.delete();
         end
 
     end

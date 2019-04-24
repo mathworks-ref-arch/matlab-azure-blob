@@ -1,6 +1,8 @@
 # MATLAB Interface *for Windows Azure Storage Blob*
 
-This is a MATLAB® interface that connects to the Windows Azure™ Storage Blob (WASB) service. This is a low-level interface, if the higher-level interface as provided in MATLAB supports your requirements it is recommended to that it, see [https://www.mathworks.com/help/matlab/import_export/work-with-remote-data.html](https://www.mathworks.com/help/matlab/import_export/work-with-remote-data.html) for more details.
+This is a MATLAB® interface that connects to the Windows Azure™ Storage Blob (WASB) service.
+This is a low-level, general interface that can be customized if the higher-level interface as provided in MATLAB does not support your needs.
+see here [https://www.mathworks.com/help/matlab/import_export/work-with-remote-data.html](https://www.mathworks.com/help/matlab/import_export/work-with-remote-data.html) for more details on what is provided in MATLAB.
 
 ## Requirements
 ### MathWorks products
@@ -8,9 +10,9 @@ This is a MATLAB® interface that connects to the Windows Azure™ Storage Blob 
 
 ### 3rd party products
 To build a required JAR file:
-* Maven
+* Maven™
 * JDK 8
-* Microsoft® Azure Blob Storage SDK for Java
+* Microsoft® Azure Blob Storage SDK for Java®
 
 ## Getting Started
 
@@ -102,7 +104,7 @@ MathWorks Products (http://www.mathworks.com)
 1.  MATLAB (R2017a or later)
 2.  MATLAB Compiler and Compiler SDK (R2017a or later)
 3.  MATLAB Production Server (R2017a or later)
-4.  MATLAB Distributed Computing Server (R2017a or later)   
+4.  MATLAB Parallel Server (R2017a or later)   
 
 This package is primarily tested on Ubuntu™ 16.04 and Windows™ 10.
 

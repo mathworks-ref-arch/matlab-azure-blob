@@ -4,9 +4,10 @@ function connect(obj, varargin)
 % string and returning a handle used to create the client handle for
 % service calls to Azure.
 %
-%   az = azure.storage.CloudStorageAccount;
-%   az.loadConfigurationSettings();
-%   az.connect();
+% Example:
+%  az = azure.storage.CloudStorageAccount;
+%  az.loadConfigurationSettings();
+%  az.connect();
 
 % Copyright 2016 The MathWorks, Inc.
 

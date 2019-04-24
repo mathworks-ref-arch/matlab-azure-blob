@@ -18,7 +18,6 @@ function loadConfigurationSettings(obj, varargin)
 %   az.AccountKey  = 'SV<MYSTORAGEACCOUNTKEY>Gw==';
 %   az.DefaultEndpointsProtocol = 'https';
 %   az.connect
-%
 
 % Copyright 2017 The MathWorks, Inc.
 

@@ -3,10 +3,11 @@ function bc = getCloudBlobClient(obj, varargin)
 % Use this method to create a handle to the CloudBlobClient to interact
 % with the Table API service.
 %
-%   az = azure.storage.CloudStorageAccount;
-%   az.loadConfigurationSettings();
-%   az.connect();
-%   bc = az.getCloudBlobClient();
+% Example:
+%  az = azure.storage.CloudStorageAccount;
+%  az.loadConfigurationSettings();
+%  az.connect();
+%  bc = az.getCloudBlobClient();
 
 % Copyright 2017 The MathWorks, Inc.
 

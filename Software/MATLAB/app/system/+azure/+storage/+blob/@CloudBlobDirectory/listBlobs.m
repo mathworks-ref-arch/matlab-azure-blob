@@ -1,9 +1,9 @@
 function blobs = listBlobs(obj, prefix)
 % LISTBLOBS Returns a list of blob items for the directory
 % This method will list all the blobs for the directory. The resulting cell
-% array of blobs are of type CloudBlockBlob and CloudBlobDirectory and can
-% be used to manipulate the blobs or blob directories. Other blob types are not
-% supported.
+% array of blobs are of type CloudBlockBlob, CloudAppendBlob and
+% CloudBlobDirectory and can be used to manipulate the blobs or blob
+% directories. Other blob types are not supported.
 %
 %   % Connect to an Azure Cloud Storage Account
 %   az = azure.storage.CloudStorageAccount;
@@ -72,8 +72,13 @@ while blobIterator.hasNext()
     switch blobType
         case 'com.microsoft.azure.storage.blob.CloudBlockBlob'
             % use the directory's container obtained in advance
-            blockBlobName = char(blobNativeHandle.getName());
-            blobs{iCount} = azure.storage.blob.CloudBlockBlob(container, blockBlobName); %#ok<AGROW>
+            blobName = char(blobNativeHandle.getName());
+            blobs{iCount} = azure.storage.blob.CloudBlockBlob(container, blobName); %#ok<AGROW>
+
+        case 'com.microsoft.azure.storage.blob.CloudAppendBlob'
+            % use the directory's container obtained in advance
+            blobName = char(blobNativeHandle.getName());
+            blobs{iCount} = azure.storage.blob.CloudAppendBlob(container, blobName); %#ok<AGROW>
 
         case 'com.microsoft.azure.storage.blob.CloudBlobDirectory'
             % if the entry is a CloudBlobDirectory construct it directly

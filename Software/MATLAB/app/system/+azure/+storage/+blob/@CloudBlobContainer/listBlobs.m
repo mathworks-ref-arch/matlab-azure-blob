@@ -1,11 +1,12 @@
 function blobs = listBlobs(obj, prefix)
 % LISTBLOBS Method to list the blobs in a container
 % This method will list all the blobs in a container. The resulting cell array
-% of blobs are of type CloudBlockBlob and or CloudBlobDirectory. Other blob
-% types are not supported. An optional prefix can be provided for blob items for
-% the container whose names begin with the specified prefix.  This value must be
-% preceded either by the name of the container or by the absolute path to the
-% container. If no blobs are present an empty cell array will be returned.
+% of blobs are of type CloudBlockBlob, CloudAppendBlob and or CloudBlobDirectory.
+% Other blob types are not supported. An optional prefix can be provided for
+% blob items for the container whose names begin with the specified prefix.
+% This value must be preceded either by the name of the container or by the
+% absolute path to the container. If no blobs are present an empty cell array
+% will be returned.
 %
 % Example:
 %   Connect to an Azure Cloud Storage Account
@@ -56,6 +57,11 @@ while blobIterator.hasNext()
             % if the entry is a CloudBlockBlob get it's name and construct
             % CloudBlockBlob from it and the container object
             blobs{iCount} = azure.storage.blob.CloudBlockBlob(obj, char(blobNativeHandle.getName())); %#ok<AGROW>
+
+        case 'com.microsoft.azure.storage.blob.CloudAppendBlob'
+            % if the entry is a CloudAppendBlob get it's name and construct
+            % CloudAppendBlob from it and the container object
+            blobs{iCount} = azure.storage.blob.CloudAppendBlob(obj, char(blobNativeHandle.getName())); %#ok<AGROW>
 
         case 'com.microsoft.azure.storage.blob.CloudBlobDirectory'
             % if the entry is a CloudBlobDirectory construct it from the native

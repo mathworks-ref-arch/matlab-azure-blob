@@ -13,11 +13,10 @@ function startTime = getSharedAccessStartTime(obj)
 
 % Copyright 2018 The MathWorks, Inc.
 
-% Create a logger object
-logObj = Logger.getLogger();
-
 startTimeJ = obj.Handle.getSharedAccessStartTime();
 if isempty(startTimeJ)
+    % Create a logger object
+    logObj = Logger.getLogger();
     write(logObj,'error','SharedAccessStartTime not set');
 else
     startTime = datetime(startTimeJ.getTime()/1000,'convertfrom','posixtime','TimeZone','UTC');

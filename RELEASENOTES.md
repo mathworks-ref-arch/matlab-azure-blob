@@ -1,6 +1,22 @@
 # MATLAB Interface *for Windows Azure Storage Blob*
 # Release Notes
 
+## Release 0.7.4 April 18th 2019
+* Improved Table API handling of nulls
+* Improved Table API handling of empty results
+* Improved unit tests
+
+## Release 0.7.3 April 4th 2019
+* Improved SAS generation calls
+* Documentation improvements
+* Added SAS unit tests
+* Improved Table unit tests
+
+## Release 0.7.2 April 2nd 2019
+* Renamed azRoot function to distinguish from other Azure interfaces
+* Added CloudAppendBlob support
+* Improved BlobProperties support
+
 ## Release 0.7.1 February 18th 2019
 * Improved logging infrastructure
 * Improved documentation

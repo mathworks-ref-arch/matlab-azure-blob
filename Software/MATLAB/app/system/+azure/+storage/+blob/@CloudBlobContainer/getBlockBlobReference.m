@@ -7,12 +7,12 @@ function blob = getBlockBlobReference(obj, varargin)
 % allowing vectorized input.
 %
 %   % use which to expand a file name on the path
-%    blob = container.getBlockBlobReference(which('MyData.mat'));
+%   blob = container.getBlockBlobReference(which('MyData.mat'));
 %   % provide a full path directly
 %   blob = container.getBlockBlobReference('/my/local/path/filename.mat');
 %   % provide a blob name
 %   blob = container.getBlockBlobReference('/my/local/path/filename.mat', 'myalternatename.mat');
-
+%
 % The input can be a cell array of character vectors but they need to be
 % fully qualified file names. In this case an array of CloudBlockBlobs will be
 % returned:
