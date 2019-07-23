@@ -30,12 +30,12 @@ methods
         logObj = Logger.getLogger();
 
         if isa(varargin{1},'com.microsoft.azure.storage.StorageUri')
-            if nargin >1
+            if nargin > 1
                 write(logObj,'warning','Expecting a single input parameter of type com.microsoft.azure.storage.StorageUri');
             end
             uriJ = varargin{1};
-            obj.PrimaryUri = matlab.net.URI(uriJ.getPrimaryUri.toString());
-            obj.SecondaryUri = matlab.net.URI(uriJ.getSecondarUri.toString());
+            obj.PrimaryUri = matlab.net.URI(char(uriJ.getPrimaryUri.toString()));
+            obj.SecondaryUri = matlab.net.URI(char(uriJ.getSecondaryUri.toString()));
             obj.Handle = uriJ;
         else
             % validate input as a MATLAB URI

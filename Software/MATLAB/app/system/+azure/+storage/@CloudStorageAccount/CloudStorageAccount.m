@@ -48,7 +48,7 @@ classdef CloudStorageAccount < azure.object
         % and can be embedded in code and publicly shared.
         AccountKey = 'Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==';
         ServiceName = 'blob';
-        DefaultEndpointsProtocol = 'http';
+        DefaultEndpointsProtocol = 'https';
         UseDevelopmentStorage = true;
         CosmosDB = false;
         DevelopmentStorageProxyUri;
@@ -66,7 +66,7 @@ classdef CloudStorageAccount < azure.object
         URI;
         BlobEndpoint;
         TableEndpoint;
-        QueueEndPoint;
+        QueueEndpoint;
     end
 
     methods
@@ -126,6 +126,16 @@ classdef CloudStorageAccount < azure.object
             else
                 % Retrieve the endpoints
                 str = char(obj.Handle.getTableEndpoint().toString());
+            end
+        end
+
+        %% Getter for the URI dependent property
+        function str = get.QueueEndpoint(obj)
+            if isempty(obj.Handle)
+                str = 'Please connect() first';
+            else
+                % Retrieve the endpoints
+                str = char(obj.Handle.getQueueEndpoint().toString());
             end
         end
     end

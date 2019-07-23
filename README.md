@@ -1,8 +1,6 @@
 # MATLAB Interface *for Windows Azure Storage Blob*
 
-This is a MATLAB® interface that connects to the Windows Azure™ Storage Blob (WASB) service.
-This is a low-level, general interface that can be customized if the higher-level interface as provided in MATLAB does not support your needs.
-see here [https://www.mathworks.com/help/matlab/import_export/work-with-remote-data.html](https://www.mathworks.com/help/matlab/import_export/work-with-remote-data.html) for more details on what is provided in MATLAB.
+This is a MATLAB® interface that connects to the Windows Azure™ Storage Blob (WASB) service. This is a low-level interface, if the higher-level interface as provided in MATLAB supports your requirements it is recommended to use that, see [https://www.mathworks.com/help/matlab/import_export/work-with-remote-data.html](https://www.mathworks.com/help/matlab/import_export/work-with-remote-data.html) for more details. This interface also supports Table Storage and Queue Storage.
 
 ## Requirements
 ### MathWorks products
@@ -67,7 +65,7 @@ az =
 Note, your storage account key is similar to the root password for the storage account. Always be careful to protect the account key. Avoid distributing it to other users, hard-coding it, or saving it anywhere in plain text that is accessible to others. Regenerate the account key using the Azure portal if you believe it may have been compromised.
 
 
-### Create a client
+### Create a blob client
 With a fully configured connection get a handle to a client that allows uploading and downloading from the blob storage.
 ```
 azClient = azure.storage.blob.CloudBlobClient(az)
@@ -98,6 +96,57 @@ blob.upload();
 ```
 This file is now available on the Windows Azure Blob Storage service.
 
+
+### Create a table client
+With a fully configured connection get a handle to a client that is required to perform CRUD (Create, Retrieve, Update, Delete) operations on Table storage.
+```
+azClient = azure.storage.table.CloudTableClient(az)
+
+azClient =
+
+  CloudTableClient with properties:
+
+    Parent: [1x1 azure.storage.CloudStorageAccount]
+```
+
+### List existing tables
+To get a list of tables, call the *CloudTableClient.listTables()* method to retrieve an list of table names.
+```
+tableList = azClient.listTables
+
+tableList =
+
+  1x14 CloudTable array with properties:
+
+    Parent
+    Name
+```
+
+### Create a queue client
+With a fully configured connection get a handle to a client that is required to perform CRUD (Create, Retrieve, Update, Delete) operations on queue storage.
+```
+queueClient = az.createCloudQueueClient()
+
+queueClient =
+ CloudQueueClient with no properties.
+```
+
+### Create a queue
+A queue contains a set of messages. The client can be used to create a queue as follows:
+```
+queue = queueClient.getQueueReference('my-queue-name');
+tf = queue.createIfNotExists();
+```
+
+### Create a message
+As message can be created as shown and must then be added to a queue before it can be retrieved:
+```
+% Create a text based message
+message = azure.storage.queue.CloudQueueMessage('Hello World');
+queue.addMessage(message);
+```
+
+
 ## Supported Products
 
 MathWorks Products (http://www.mathworks.com)
@@ -106,7 +155,7 @@ MathWorks Products (http://www.mathworks.com)
 3.  MATLAB Production Server (R2017a or later)
 4.  MATLAB Parallel Server (R2017a or later)   
 
-This package is primarily tested on Ubuntu™ 16.04 and Windows™ 10.
+This package is primarily tested on Ubuntu™ 18.04 and Windows™ 10.
 
 ## License
 The license for the MATLAB Interface for Windows Azure Storage Blob is available in the [LICENSE.TXT](LICENSE.TXT) file in this GitHub repository. This package uses certain third-party content which is licensed under separate license agreements. See the [pom.xml](Software/Java/pom.xml) file for third-party software downloaded at build time.
@@ -118,6 +167,5 @@ https://www.mathworks.com/products/reference-architectures/request-new-reference
 ## Support
 Email: `mwlab@mathworks.com`
 
-------------
 
-[//]: #  (Copyright 2017 The MathWorks, Inc.)
+[//]: #  (Copyright 2017-2019 The MathWorks, Inc.)

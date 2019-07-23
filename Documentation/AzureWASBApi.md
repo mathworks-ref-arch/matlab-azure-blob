@@ -17,6 +17,14 @@
 * `Software\MATLAB\app\system\+azure\+storage\+blob\@CloudBlockBlob`
 * `Software\MATLAB\app\system\+azure\+storage\+blob\@SharedAccessBlobPermissions`
 * `Software\MATLAB\app\system\+azure\+storage\+blob\@SharedAccessBlobPolicy`
+* `Software\MATLAB\app\system\+azure\+storage\+queue\@CloudQueue`
+* `Software\MATLAB\app\system\+azure\+storage\+queue\@CloudQueueClient`
+* `Software\MATLAB\app\system\+azure\+storage\+queue\@CloudQueueMessage`
+* `Software\MATLAB\app\system\+azure\+storage\+queue\@MessageUpdateFields`
+* `Software\MATLAB\app\system\+azure\+storage\+queue\@QueuePermissions`
+* `Software\MATLAB\app\system\+azure\+storage\+queue\@QueueRequestOptions`
+* `Software\MATLAB\app\system\+azure\+storage\+queue\@SharedAccessQueuePermissions`
+* `Software\MATLAB\app\system\+azure\+storage\+queue\@SharedAccessQueuePolicy`
 * `Software\MATLAB\app\system\+azure\+storage\+table\@CloudTable`
 * `Software\MATLAB\app\system\+azure\+storage\+table\@CloudTableClient`
 * `Software\MATLAB\app\system\+azure\+storage\+table\@DynamicTableEntity`
@@ -100,11 +108,17 @@
    az.connect();
 
 ```
+### @CloudStorageAccount/createCloudQueueClient.m
+```notalanguage
+  CREATECLOUDQUEUECLIENT Method to create a client for the Queue Service
+ 
+
+```
 ### @CloudStorageAccount/getCloudBlobClient.m
 ```notalanguage
   GETCLOUDBLOBCLIENT Method to create a client for the Blob Service
   Use this method to create a handle to the CloudBlobClient to interact
-  with the Table API service.
+  with the Blob API service.
  
   Example:
    az = azure.storage.CloudStorageAccount;
@@ -194,19 +208,21 @@
 ### @OperationContext/setDefaultProxy.m
 ```notalanguage
   SETDEFAULTPROXY Sets the default proxy server used by the client
-  By default this will pick up the MATLAB settings or if not set and on
+  By default setDefaultProxy use the MATLAB settings or if not set and on
   Windows the systems preferences will be used.
+  Specific values can also be used.
  
   Examples:
-    Set the default client proxy to that set in the MATLAB preferences
-    panel, if preferences are not set then use system preferences (Windows only):
-        obj.setDefaultProxy();
+     Set the default client proxy to that set in the MATLAB preferences
+     panel, if preferences are not set then use system preferences (Windows only):
+         oc = azure.storage.OperationContext();
+         oc.setDefaultProxy();
  
-    Set the default proxy to a specific value:
-        obj.setDefaultProxy('myproxy.mycompany.com', 8080);
+     Set the default proxy to a specific value:
+         oc.setDefaultProxy('myproxy.mycompany.com', 8080);
  
-    Set the default to a direct connection i.e. no proxy
-        obj.setDefaultProxy('NO_PROXY');
+     Set the default to a direct connection i.e. no proxy
+         oc.setDefaultProxy('NO_PROXY');
  
 
 ```
@@ -1799,7 +1815,7 @@
 ### @SharedAccessBlobPolicy/getPermissions.m
 ```notalanguage
   GETPERMISSIONS Gets the permissions for a shared access signature policy
-  An array of azure.storage.blob.SharedAccessAccountBlobPermissions
+  An array of azure.storage.blob.SharedAccessBlobPermissions
   enumerations are returned.
  
     % create a blob policy object
@@ -1918,6 +1934,562 @@
  
      % create a policy and set the time to the current time
      myPolicy = azure.storage.blob.SharedAccessBlobPolicy();
+     t = datetime('now','TimeZone','UTC');
+     myPolicy.setSharedAccessStartTime(t)
+ 
+  Microsoft recommend that if setting the start time to the current time
+  that this time be set 15 minutes early to allow clock variations
+ 
+     t = datetime('now','TimeZone','UTC');
+     t = t - minutes(15);
+     myPolicy.setSharedAccessStartTime(t)
+
+```
+
+------
+
+
+## @CloudQueue
+
+### @CloudQueue/CloudQueue.m
+```notalanguage
+  CLOUDQUEUE Class to represent a CloudQueue
+  A CloudQueue is a local representation of a queue, creating the object does
+  not create the queue directly, as shown below.
+ 
+  Example:
+     % Authenticate a storage account
+     az = azure.storage.CloudStorageAccount;
+     az.loadConfigurationSettings();
+     az.connect()
+     % Create a CloudQueueClient using the storage account
+     queueClient = az.createCloudQueueClient();
+     % Create a named CloudQueue object and create the corresponding queue
+     % if it does not already exist
+     queue = queueClient.getQueueReference('myQueueName');
+     tf = queue.createIfNotExists();
+ 
+     % A queue can also be accessed via a Shared Access Signature (SAS)
+     % A SAS is made up of a URI & SAS token:
+     % e.g. sasUri = [char(resourceUri.EncodedURI), '?', sasToken];
+     % They can be generated in various ways, e.g. using this package or
+     % using Azure Storage Explorer
+     sasQueue = azure.storage.queue.CloudQueue(azure.storage.StorageUri(matlab.net.URI(sasUri)));
+     % The queue can now be sued as normal:
+     tf = sasQueue.exists();
+     % read from the queue
+     peekedMessage = sasQueue.peekMessage();
+     Note, the authentication step to create a client is not required
+
+```
+### @CloudQueue/addMessage.m
+```notalanguage
+  ADDMESSAGE Adds a message to a queue
+
+```
+### @CloudQueue/clear.m
+```notalanguage
+  CLEAR Clears all messages from the queue
+
+```
+### @CloudQueue/createIfNotExists.m
+```notalanguage
+  CREATEIFNOTEXISITS Creates a queue if it does not already exist
+
+```
+### @CloudQueue/deleteIfExists.m
+```notalanguage
+  DELETEIFEXISTS Deletes a queue if it exists
+  A logical true is returned if the queue existed in the storage service and
+  has been deleted, otherwise false.
+
+```
+### @CloudQueue/deleteMessage.m
+```notalanguage
+  DELETEMESSAGE Deletes the specified message from the queue
+
+```
+### @CloudQueue/downloadAttributes.m
+```notalanguage
+  DOWNLOADATTRIBUTES Downloads metadata and approximate message count
+
+```
+### @CloudQueue/downloadPermissions.m
+```notalanguage
+  DOWNLOADPERMISSIONS Downloads the permission settings for the queue
+  A azure.storage.queue.QueuePermissions object is returned.
+
+```
+### @CloudQueue/exists.m
+```notalanguage
+  EXISTS Returns true if the queue exists, otherwise false
+
+```
+### @CloudQueue/generateSharedAccessSignature.m
+```notalanguage
+  GENERATESHAREDACCESSSIGNATURE Returns a shared access signature for the queue
+  policy should be of type azure.storage.queue.SharedAccessQueuePolicy
+  groupPolicyIdentifier should be of type character vector.
+  The SAS Token is returned as a character vector.
+  To derived the full SAS URI combine the output of this call with the output
+  of getUri(), note the inclusion of a ? separator.
+ 
+  Example:
+     sasToken = queue.generateSharedAccessSignature(policy, groupPolicyIdentifier);
+     resourceUri = queue.getUri();
+     sasUri = [char(resourceUri.EncodedURI), '?', sasToken];
+
+```
+### @CloudQueue/getApproximateMessageCount.m
+```notalanguage
+  GETAPPROXIMATEMESSAGECOUNT Get the approximate number of messages in the queue
+  It is initialized by a call to downloadAttributes and represents the
+  approximate message count when that request completed.
+ 
+  Example:
+     queue.downloadAttributes();
+     cachedMessageCount = queue.getApproximateMessageCount();
+
+```
+### @CloudQueue/getMetadata.m
+```notalanguage
+  GETMETADATA Gets metadata collection for the queue as stored in this object
+  This value is initialized with the metadata from the queue by a call to
+  downloadAttributes, and is set on the queue with a call to uploadMetadata.
+  A containers.Map is returned, if there is no metadata an empty containers.Map
+  is returned.
+ 
+  Example:
+     queue.downloadAttributes();
+     metadata = queue2.getMetadata();
+     keys(metadata)
+     values(metadata)
+
+```
+### @CloudQueue/getName.m
+```notalanguage
+  GETNAME Gets the name of the queue
+  The value is returned as a character vector.
+
+```
+### @CloudQueue/getServiceClient.m
+```notalanguage
+  GETSERVICECLIENT Gets the queue service client associated with the queue
+
+```
+### @CloudQueue/getShouldEncodeMessage.m
+```notalanguage
+  GETSHOULDENCODEMESSAGE Gets the flag to base-64 encoded messages
+  A logical is returned.
+
+```
+### @CloudQueue/getStorageUri.m
+```notalanguage
+  GETSTORAGEURI Returns the list of URIs for all locations
+
+```
+### @CloudQueue/getUri.m
+```notalanguage
+  GETSTORAGEURI Gets the absolute URI for this queue
+
+```
+### @CloudQueue/peekMessage.m
+```notalanguage
+  PEEKMESSAGE Peeks a message from the queue
+  A peek request retrieves a message from the front of the queue without
+  changing its visibility. If no message is found an empty value is
+  returned.
+
+```
+### @CloudQueue/retrieveMessage.m
+```notalanguage
+  RETRIEVEMESSAGE Retrieves a message from the front of the queue
+  This operation marks the retrieved message as invisible in the queue for the
+  default visibility timeout period.
+
+```
+### @CloudQueue/setMetadata.m
+```notalanguage
+  SETMETADATA Sets metadata name-value pairs to be set with uploadMetadata
+  This will overwrite any existing queue metadata. If this is set to an empty
+  collection, the queue metadata will be cleared on an uploadMetadata call.
+
+```
+### @CloudQueue/setShouldEncodeMessage.m
+```notalanguage
+  SETSHOULDENCODEMESSAGE Sets the flag to base-64 encoded messages
+  shouldEncodeMessage should be of type logical.
+
+```
+### @CloudQueue/updateMessage.m
+```notalanguage
+  UPDATEMESSAGE Updates the specified message in the queue
+  The updated updates the specified message in the queue with a new visibility
+  timeout value in seconds or updates a set of fields using the specified
+  request options and operation context.
+ 
+  Example:
+     % updated the contents of a previously retrieved message
+     retrievedMessage.setMessageContent(newMsgStr);
+     % using defaults for QueueRequestOptions & OperationContext
+     requestOptions = azure.storage.queue.QueueRequestOptions();
+     operationContext = azure.storage.OperationContext();
+     % array of Enums for fields to be updated
+     updateFields(1) = azure.storage.queue.MessageUpdateFields.CONTENT;
+     updateFields(2) = azure.storage.queue.MessageUpdateFields.VISIBILITY;
+     % setting a visibility value less than the default of 30
+     visibilityTimeout = 10;
+     queue.updateMessage(retrievedMessage, visibilityTimeout, updateFields, requestOptions, operationContext);
+ 
+ 
+     % or setting just the visibility timeout
+     queue.updateMessage(retrievedMessage, visibilityTimeout);
+
+```
+### @CloudQueue/uploadMetadata.m
+```notalanguage
+  UPLOADMETADATA Uploads the metadata in the object to the queue
+
+```
+### @CloudQueue/uploadPermissions.m
+```notalanguage
+  UPLOADMETADATA Uploads the queue's permissions
+
+```
+
+------
+
+
+## @CloudQueueClient
+
+### @CloudQueueClient/CloudQueueClient.m
+```notalanguage
+  CLOUDQUEUECLIENT Class to provide access to the CloudQueue client
+  A client object is used to perform many basic operations when working with
+  queues.
+ 
+  Example:
+     % Create the Client
+     az = azure.storage.CloudStorageAccount;
+     az.loadConfigurationSettings();
+     az.connect();
+     queueClient = az.createCloudQueueClient();
+     % List all queues
+     queues = queueClient.listQueues();
+
+```
+### @CloudQueueClient/getQueueReference.m
+```notalanguage
+  GETQUEUEREFERENCE Gets a CloudQueue object with the specified name
+ 
+  Example:
+     queue = queueClient.getQueueReference(queueName);
+     tf  = queue.exists();
+
+```
+### @CloudQueueClient/listQueues.m
+```notalanguage
+  LISTQUEUES Gets queues for this queue service client
+  An array of azure.storage.queue.CloudQueues are returned.
+  If there are no queues an empty array is returned.
+
+```
+
+------
+
+
+## @CloudQueueMessage
+
+### @CloudQueueMessage/CloudQueueMessage.m
+```notalanguage
+  CLOUDQUEUEMESSAGE Class to represent a CloudQueueMessage
+  Messages are added and retrieved from queues.
+ 
+  Example:
+     message = azure.storage.queue.CloudQueueMessage('my message');
+     queue.addMessage(message);
+ 
+     retrievedMessage = queue.retrieveMessage();
+
+```
+### @CloudQueueMessage/getDequeueCount.m
+```notalanguage
+ GETDEQUEUECOUNT Gets the dequeue count
+
+```
+### @CloudQueueMessage/getExpirationTime.m
+```notalanguage
+  GETEXPIRATIONTIME Gets the time that the message expires
+  The time is returned as a datetime.
+
+```
+### @CloudQueueMessage/getId.m
+```notalanguage
+  GETID Gets the message ID
+  The ID is returned as a character vector
+
+```
+### @CloudQueueMessage/getInsertionTime.m
+```notalanguage
+  GETINSERTIONTIME Gets the time that the message was inserted
+  The time is returned as a datetime.
+
+```
+### @CloudQueueMessage/getMessageContentAsByte.m
+```notalanguage
+  GETMESSAGECONETENTASBYTE Gets message content as a byte array
+  The content is returned as a uint8 array
+
+```
+### @CloudQueueMessage/getMessageContentAsString.m
+```notalanguage
+  GETMESSAGECONETENTASSTRING Gets message content as a string
+  The content is returned as a character vector
+
+```
+### @CloudQueueMessage/getMessageId.m
+```notalanguage
+  GETMESSAGEID Gets the message ID
+  The ID is returned as a character vector
+
+```
+### @CloudQueueMessage/getNextVisibleTime.m
+```notalanguage
+  GETNEXTVISIBILITYTIME Gets the time that the message will next be visible
+  The time is returned as a datetime.
+
+```
+### @CloudQueueMessage/getPopReceipt.m
+```notalanguage
+  GETPOPRECEIPT Gets the message's pop receipt
+  The receipt is returned as a character vector
+
+```
+### @CloudQueueMessage/setExpirationTime.m
+```notalanguage
+  SETEXPIRATIONTIME Sets the time that the message expires
+  The time is provided as a datetime.
+
+```
+### @CloudQueueMessage/setInsertionTime.m
+```notalanguage
+  SETINSERTIONTIME Sets the time that the message was inserted
+  The time is provided as a datetime.
+
+```
+### @CloudQueueMessage/setMessageContent.m
+```notalanguage
+  SETMESSAGECONTENT Sets the content of a message
+  The content should be of type character vector or a uint8 array
+
+```
+### @CloudQueueMessage/setNextVisibleTime.m
+```notalanguage
+  SETNEXTVISIBLETIME Sets the time the message to become visible in the queue
+  The time is provided as a datetime.
+
+```
+
+------
+
+
+## @MessageUpdateFields
+
+### @MessageUpdateFields/MessageUpdateFields.m
+```notalanguage
+  MESSAGEUPDATEFIELDS Flags for the values to set when updating messages
+ 
+  Valid values are:
+     CONTENT	 Set to update the message content.
+     VISIBILITY	 Set to update the message visibility timeout.
+
+```
+
+------
+
+
+## @QueuePermissions
+
+### @QueuePermissions/QueuePermissions.m
+```notalanguage
+  QUEUEPERMISSIONS Class to represent the permissions for a queue
+
+```
+### @QueuePermissions/getSharedAccessPolicies.m
+```notalanguage
+  GETSHAREDACCESSPOLICIES Returns the set of shared access policies
+  A containers.Map of the is returned.
+
+```
+### @QueuePermissions/setSharedAccessPolicies.m
+```notalanguage
+  SETSHAREDACCESSPOLICIES Sets shared access policies
+  permissions should be an array of azure.storage.queue.SahredAccessQueiePolicy
+  objects
+
+```
+
+------
+
+
+## @QueueRequestOptions
+
+### @QueueRequestOptions/QueueRequestOptions.m
+```notalanguage
+  QUEUEREQUESTOPTIONS Represents options specified on a queue request
+
+```
+
+------
+
+
+## @SharedAccessQueuePermissions
+
+### @SharedAccessQueuePermissions/SharedAccessQueuePermissions.m
+```notalanguage
+  SHAREDACCESSQUEUEPERMISSIONS Specifies the set of possible permissions
+  The permissions are used for a shared access queue policy.
+ 
+  Valid values are:
+    ADD             Permission to add messages granted.
+    NONE	        No shared access granted.
+    PROCESSMESSAGES	Permission to get and delete messages granted.
+    READ	        Permission to peek messages and get queue metadata granted.
+    UPDATE          Permissions to update messages granted.
+
+```
+
+------
+
+
+## @SharedAccessQueuePolicy
+
+### @SharedAccessQueuePolicy/SharedAccessQueuePolicy.m
+```notalanguage
+  SHAREDACCESSQUEUEPOLICY Represents a shared access policy
+  This class specifies the start time, expiry time, and permissions for a
+  shared access signature.
+
+```
+### @SharedAccessQueuePolicy/getPermissions.m
+```notalanguage
+  GETPERMISSIONS Gets the permissions for a shared access signature policy
+  An array of azure.storage.queue.SharedAccessQueuePermissions
+  enumerations are returned.
+ 
+    % create a queue policy object
+    myPolicy = azure.storage.queue.SharedAccessQueuePolicy();
+    % add read and add privileges to that policy
+    myPolicy.setPermissionsFromString('ra');
+    % read back those permissions from the policy
+    myEnumPerms = myPolicy.getPermissions
+    x =
+      1x2 SharedAccessQueuePermissions enumeration array
+        READ    ADD
+
+```
+### @SharedAccessQueuePolicy/getSharedAccessExpiryTime.m
+```notalanguage
+  GETSHAREDACESSEXPIRYTIME Gets expiry time for shared access signatures
+  The output time is of type datetime, expiryTime will be returned with a
+  UTC time zone.
+ 
+     % check the expiry time is greater than the current time
+     t1 = myPolicy.getSharedAccessExpiryTime();
+     t2 = datetime('now', 'TimeZone', 'UTC')
+     if (t2 > t1)
+         disp('Access period has expired');
+     end
+ 
+
+```
+### @SharedAccessQueuePolicy/getSharedAccessStartTime.m
+```notalanguage
+  GETSHAREDACCESSSTARTTIME Gets start time for shared access signatures
+  The output time is of type datetime, startTime will be returned with a
+  UTC time zone.
+ 
+     % get start time and compare with current time (UTC)
+     t1 = myPolicy.getSharedAccessStartTime();
+     t2 = datetime('now', 'TimeZone', 'UTC');
+     if (t2 > t1)
+        disp('Access period has started');
+     end
+ 
+
+```
+### @SharedAccessQueuePolicy/permissionsToString.m
+```notalanguage
+  PERMISSIONSTOSTRING Converts policy permissions to a character vector
+ 
+    permSet(1) = azure.storage.queue.SharedAccessQueuePermissions.ADD;
+    permSet(2) = azure.storage.queue.SharedAccessQueuePermissions.READ;
+    permSet(3) = azure.storage.queue.SharedAccessQueuePermissions.UPDATE;
+    myPolicy = azure.storage.queue.SharedAccessQueuePolicy();
+    myPolicy.setPermissions(permSet);
+    str = myPolicy.permissionsToString
+    str =
+        'rac'
+ 
+
+```
+### @SharedAccessQueuePolicy/setPermissions.m
+```notalanguage
+  SETPERMISSIONS Sets permissions for a shared access policy
+  This policy is used for a Shared Access Signature. permSet
+  should be an array of azure.storage.queue.SharedAccessQueuePermissions
+  enumerations.
+ 
+    % create an array of permissions enumerations
+    permSet(1) = azure.storage.queue.SharedAccessQueuePermissions.ADD;
+    permSet(2) = azure.storage.queue.SharedAccessQueuePermissions.READ;
+    permSet(3) = azure.storage.queue.SharedAccessQueuePermissions.UPDATE;
+    % create a queue policy object
+    myPolicy = azure.storage.queue.SharedAccessQueuePolicy();
+    % set permissions on the policy
+    myPolicy.setPermissions(permSet);
+ 
+
+```
+### @SharedAccessQueuePolicy/setPermissionsFromString.m
+```notalanguage
+  SETPERMISSIONSFROMSTRING Set permissions using specified character vector
+  A String that represents the shared access permissions. The string must
+  contain one or more of the following values.
+ 
+  r: Read access
+  a: Add access
+  u: Update access
+  w: ProcessMessages access
+ 
+    % create a queue policy object
+    myPolicy = azure.storage.blob.SharedAccessQueuePolicy();
+    % add read and add privileges to that policy
+    myPolicy.setPermissionsFromString('ra');
+ 
+
+```
+### @SharedAccessQueuePolicy/setSharedAccessExpiryTime.m
+```notalanguage
+  SETSHAREDACCESSEXPIRYTIME Sets expiry time for shared access signatures
+  The input time should be of type datetime and should be in the UTC time zone.
+ 
+     % create a policy and apply an expiry time to it, in this case 24
+     % hours from now
+     myPolicy = azure.storage.queue.SharedAccessQueuePolicy();
+     t = datetime('now','TimeZone','UTC');
+     t = t + hours(24);
+     myPolicy.setSharedAccessExpiryTime(t)
+ 
+
+```
+### @SharedAccessQueuePolicy/setSharedAccessStartTime.m
+```notalanguage
+  SETSHAREDACCESSSTARTTIME Sets start time for shared access signatures
+  The input time should be of type datetime and should be in the UTC time zone.
+ 
+     % create a policy and set the time to the current time
+     myPolicy = azure.storage.queue.SharedAccessQueuePolicy();
      t = datetime('now','TimeZone','UTC');
      myPolicy.setSharedAccessStartTime(t)
  

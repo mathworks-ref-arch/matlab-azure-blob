@@ -1,6 +1,12 @@
 # MATLAB Interface *for Windows Azure Storage Blob*
 # Release Notes
 
+## Release 0.8.0 July 23rd 2019
+* Added Queue support
+* Improved documentation
+* Added security notice
+* Fixed bug in StorageUri constructor
+
 ## Release 0.7.4 April 18th 2019
 * Improved Table API handling of nulls
 * Improved Table API handling of empty results

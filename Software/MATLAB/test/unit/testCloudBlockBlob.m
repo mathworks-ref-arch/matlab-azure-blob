@@ -56,7 +56,7 @@ classdef testCloudBlockBlob < matlab.unittest.TestCase
 
             % Create some sample data & upload them
             filename = 'SampleData.mat';
-            sampleData = rand(100,100); %#ok<NASGU>
+            sampleData = rand(100,100);
             save(filename, 'sampleData');
             blob = azContainer.getBlockBlobReference(which(filename));
             blob.upload();
@@ -95,7 +95,7 @@ classdef testCloudBlockBlob < matlab.unittest.TestCase
             filename1 = 'SampleData1.mat';
             filename2 = 'SampleData2.mat';
             filename3 = 'SampleData3.mat';
-            sampleData = rand(100,100); %#ok<NASGU>
+            sampleData = rand(100,100);
             save(filename1, 'sampleData');
             save(filename2, 'sampleData');
             save(filename3, 'sampleData');
@@ -141,7 +141,7 @@ classdef testCloudBlockBlob < matlab.unittest.TestCase
             testCase.verifyTrue(flag);
 
             % Create some sample data and upload it creating a virtual directory
-            sampleData = rand(100,100); %#ok<NASGU>
+            sampleData = rand(100,100);
             filename1 = 'SampleData1.mat';
             save(filename1, 'sampleData');
             fullpath = which(filename1);

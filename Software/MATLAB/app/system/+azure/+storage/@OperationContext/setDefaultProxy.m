@@ -1,18 +1,20 @@
 function  setDefaultProxy(obj, varargin)
 % SETDEFAULTPROXY Sets the default proxy server used by the client
-% By default this will pick up the MATLAB settings or if not set and on
+% By default setDefaultProxy use the MATLAB settings or if not set and on
 % Windows the systems preferences will be used.
+% Specific values can also be used.
 %
 % Examples:
-%   Set the default client proxy to that set in the MATLAB preferences
-%   panel, if preferences are not set then use system preferences (Windows only):
-%       obj.setDefaultProxy();
+%    Set the default client proxy to that set in the MATLAB preferences
+%    panel, if preferences are not set then use system preferences (Windows only):
+%        oc = azure.storage.OperationContext();
+%        oc.setDefaultProxy();
 %
-%   Set the default proxy to a specific value:
-%       obj.setDefaultProxy('myproxy.mycompany.com', 8080);
+%    Set the default proxy to a specific value:
+%        oc.setDefaultProxy('myproxy.mycompany.com', 8080);
 %
-%   Set the default to a direct connection i.e. no proxy
-%       obj.setDefaultProxy('NO_PROXY');
+%    Set the default to a direct connection i.e. no proxy
+%        oc.setDefaultProxy('NO_PROXY');
 %
 
 % Copyright 2017 The MathWorks, Inc.
@@ -42,9 +44,11 @@ if isempty(varargin)
         if isa(address,'java.net.InetSocketAddress') && ...
                 javaProxy.type == javaMethod('valueOf','java.net.Proxy$Type','HTTP')
             host = char(address.getHostName());
+            port = address.getPort();
+            write(logObj,'verbose',['Setting default proxy to: ',host,':',port]);
+        else
+            write(logObj,'error','Invalid proxy');
         end
-        port = address.getPort();
-        write(logObj,'verbose',['Setting default proxy to: ',host,':',port]);
     else
         write(logObj,'verbose','Setting default proxy to direct connection');
         javaProxy = java.net.Proxy.NO_PROXY;

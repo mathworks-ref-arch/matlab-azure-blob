@@ -1,6 +1,6 @@
 function permSet = getPermissions(obj)
 % GETPERMISSIONS Gets the permissions for a shared access signature policy
-% An array of azure.storage.blob.SharedAccessAccountBlobPermissions
+% An array of azure.storage.blob.SharedAccessBlobPermissions
 % enumerations are returned.
 %
 %   % create a blob policy object

@@ -32,7 +32,7 @@ if nargin > 1
     end
 end
 
-% The list of blob returned will be com.microsoft.azure.storage.<xyz> blobs
+% The list of blobs returned will be com.microsoft.azure.storage.<xyz> blobs
 % rather than azure.storage.<xyz> as they are being returned by a Handle call
 if nargin > 1
     blobLazySegment = obj.Handle.listBlobs(prefix);
