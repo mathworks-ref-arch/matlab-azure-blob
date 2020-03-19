@@ -79,6 +79,9 @@ classdef CloudStorageAccount < azure.object
             % In normal operation use default level: debug
             % logObj.DisplayLevel = 'verbose';
 
+            if ~usejava('jvm')
+                write(logObj,'error','MATLAB must be used with the JVM enabled');
+            end
             if verLessThan('matlab','9.2') % R2017a
                 write(logObj,'error','MATLAB Release 2017a or newer is required');
             end

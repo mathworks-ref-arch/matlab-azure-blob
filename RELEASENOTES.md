@@ -1,6 +1,10 @@
 # MATLAB Interface *for Windows Azure Storage Blob*
 # Release Notes
 
+## Release 0.8.1 March 5th 2020
+* Updated security notice
+* Updated license
+
 ## Release 0.8.0 July 23rd 2019
 * Added Queue support
 * Improved documentation

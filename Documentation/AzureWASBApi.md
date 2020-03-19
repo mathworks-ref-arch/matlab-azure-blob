@@ -447,8 +447,8 @@
 ### @CloudAppendBlob/CloudAppendBlob.m
 ```notalanguage
   CLOUDAPPENDBLOB Class to represent an Azure CloudAppendBlob object
-  A AppendBlob can be created in several ways. In the first example a
-  container handle is provided along with the name of the BlobBlob
+  An AppendBlob can be created in several ways. In the first example a
+  container handle is provided along with the name of the Blob
   once uploaded. A CloudAppendBlob object does not
   guarantee a file exists, for example a AppendBlob may be downloadable
   rather than uploadable i.e. it exists in Azure but not locally.
@@ -470,7 +470,7 @@
   a virtual directory 'mydir' Azure will represent this as a
   CloudBlobDirectory. Empty virtual directories are not supported.
  
-  A AppendBlob can also be created based on a Shared Access Signature for a
+  An AppendBlob can also be created based on a Shared Access Signature for a
   AppendBlob
  
     blob = azure.storage.blob.CloudAppendBlob(mySAS_StorageUri);
@@ -3550,4 +3550,4 @@
 
 ------------    
 
-[//]: # (Copyright 2019 The MathWorks, Inc.)
+[//]: # (Copyright 2020 The MathWorks, Inc.)
