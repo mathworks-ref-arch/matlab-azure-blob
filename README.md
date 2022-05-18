@@ -1,5 +1,7 @@
 # MATLAB Interface *for Windows Azure Storage Blob*
 
+**This package has been deprecated, please use the following package instead: https://github.com/mathworks-ref-arch/matlab-azure-services This package may be removed in the future.**
+
 This is a MATLAB® interface that connects to the Windows Azure™ Storage Blob (WASB) service. This is a low-level interface, if the higher-level interface as provided in MATLAB supports your requirements it is recommended to use that, see [https://www.mathworks.com/help/matlab/import_export/work-with-remote-data.html](https://www.mathworks.com/help/matlab/import_export/work-with-remote-data.html) for more details. This interface also supports Table Storage and Queue Storage.
 
 ## Requirements
